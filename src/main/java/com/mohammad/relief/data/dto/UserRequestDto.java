@@ -2,6 +2,8 @@ package com.mohammad.relief.data.dto;
 
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
+
 public record UserRequestDto(
         @NotNull
         String username,
@@ -10,4 +12,6 @@ public record UserRequestDto(
         String email,
         @NotNull
         @Pattern(regexp = "^[A-Z][A-Za-z\\d@$!%*?&]{7,15}$")
-        String password ) { }
+        String password,
+        LocalDate birthday) { }
+

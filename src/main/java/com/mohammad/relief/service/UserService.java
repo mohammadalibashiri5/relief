@@ -28,12 +28,18 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(userRequestDto.password());
         User user = userMapper.toEntity(userRequestDto);
         user.setPassword(hashedPassword);
+        user.setRole("ROLE_USER");
         User savedUser = userRepository.save(user);
         return userMapper.toResponseDto(savedUser);
     }
 
     public Optional<UserResponseDto> findUserById(UUID id) {
         return userRepository.findById(id)
+                .map(userMapper::toResponseDto);
+    }
+
+    public Optional<UserResponseDto> findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .map(userMapper::toResponseDto);
     }
 

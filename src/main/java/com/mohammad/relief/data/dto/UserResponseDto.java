@@ -1,5 +1,6 @@
 package com.mohammad.relief.data.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -8,5 +9,5 @@ public record UserResponseDto(
         String username,
         String email,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDate birthday
 ) {}

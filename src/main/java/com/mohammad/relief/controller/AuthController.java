@@ -2,7 +2,6 @@ package com.mohammad.relief.controller;
 
 import com.mohammad.relief.auth.AuthRequest;
 import com.mohammad.relief.auth.AuthResponse;
-import com.mohammad.relief.data.entity.User;
 import com.mohammad.relief.repository.UserRepository;
 import com.mohammad.relief.util.JwtUtil;
 import org.springframework.http.HttpStatus;

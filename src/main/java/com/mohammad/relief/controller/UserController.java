@@ -1,10 +1,13 @@
 package com.mohammad.relief.controller;
 
-import com.mohammad.relief.data.dto.AddictionRequestDto;
+import com.mohammad.relief.data.dto.ModifiedUserDto;
 import com.mohammad.relief.data.dto.UserRequestDto;
 import com.mohammad.relief.data.dto.UserResponseDto;
-import com.mohammad.relief.service.AddictionService;
+import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.service.UserService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.http.ResponseEntity;
@@ -12,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
-import java.util.UUID;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,34 +27,28 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) throws ReliefApplicationException {
         UserResponseDto userResponse = userService.registerUser(userRequestDto);
         return ResponseEntity.ok(userResponse);
     }
-    @PostMapping("/{userId}/addictions")
-    public ResponseEntity<?> assignAddiction(
-            @PathVariable UUID userId,
-            @RequestBody AddictionRequestDto dto) {
 
-        dto = new AddictionRequestDto(userId, dto.name(), dto.description(), dto.severityLevel(), dto.yearOfAddiction());
-        userService.assignAddictionToUser(dto);
 
-        return ResponseEntity.ok("Addiction assigned to user successfully.");
-    }
+    @PutMapping("/update")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<UserResponseDto> updateUser(
+            @RequestBody ModifiedUserDto userResponseDto,
+            Principal principal) throws ReliefApplicationException {
 
-    @GetMapping("/{id}")
-    ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id) {
-        return userService.findUserById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
-    @GetMapping("/{email}")
-    ResponseEntity<UserResponseDto> getUserByEmail(@PathVariable String email) {
-        return userService.findUserByEmail(email).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
+        // Extract the logged-in user's email from the token
+        String email = principal.getName();
+        System.out.println("Email from principal: " + email);
 
-    @PutMapping("/{id}")
-    ResponseEntity<UserResponseDto> updateUser(@PathVariable UUID id, @Valid @RequestBody UserRequestDto userRequestDto) {
-        UserResponseDto updatedUser = userService.updateUser(id, userRequestDto);
+        // Call service to update user
+        UserResponseDto updatedUser = userService.updateUser(userResponseDto, email);
+
         return ResponseEntity.ok(updatedUser);
     }
+
+
 }
 

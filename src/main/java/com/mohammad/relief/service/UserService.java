@@ -1,20 +1,18 @@
 package com.mohammad.relief.service;
 
-import com.mohammad.relief.data.dto.AddictionRequestDto;
+
+import com.mohammad.relief.data.dto.ModifiedUserDto;
 import com.mohammad.relief.data.dto.UserRequestDto;
 import com.mohammad.relief.data.dto.UserResponseDto;
-import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.UserMapper;
 import com.mohammad.relief.repository.UserRepository;
-import jakarta.validation.Valid;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -28,15 +26,55 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserResponseDto registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        String hashedPassed = passwordEncoder.encode(userRequestDto.password());
-        User user = userMapper.toEntity(userRequestDto);
-        user.setRole("ROLE_USER");
-        user.setPassword(hashedPassed);
-        User savedUser = userRepository.save(user);
-        return userMapper.toResponseDto(savedUser);
+    public UserResponseDto registerUser(UserRequestDto userRequestDto) throws ReliefApplicationException {
+        if (userRequestDto == null) {
+            throw new ReliefApplicationException("UserRequestDto is null");
+        }
+
+        if (!userRepository.existsByUsername(userRequestDto.username())) {
+            String hashedPassed = passwordEncoder.encode(userRequestDto.password());
+            User user = userMapper.toEntity(userRequestDto);
+            user.setRole("ROLE_USER");
+            user.setPassword(hashedPassed);
+            User savedUser = userRepository.save(user);
+            return userMapper.toResponseDto(savedUser);
+        } else throw new ReliefApplicationException("User already exists");
     }
 
+    public UserResponseDto updateUser(ModifiedUserDto userResponseDto, String username) throws ReliefApplicationException {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new ReliefApplicationException("User not found");
+        }
+        User foundUser = user.get();
+
+        if (!foundUser.getName().equals(userResponseDto.name())) {
+            foundUser.setName(userResponseDto.name());
+        }
+        if (!foundUser.getFamilyName().equals(userResponseDto.familyName())) {
+            foundUser.setFamilyName(userResponseDto.familyName());
+        }
+        if (!foundUser.getPassword().equals(userResponseDto.password())) {
+            PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+            passwordEncoder.encode(userResponseDto.password());
+            foundUser.setPassword(userResponseDto.password());
+        }
+        if (!foundUser.getDateOfBirth().equals(userResponseDto.dateOfBirth())) {
+            foundUser.setDateOfBirth(userResponseDto.dateOfBirth());
+        }
+
+        userRepository.save(foundUser);
+        return userMapper.toResponseDto(foundUser);
+    }
+
+
+
+
+
+
+
+
+    /*
     public void assignAddictionToUser(AddictionRequestDto dto) {
         User user = userRepository.findById(dto.userId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -52,29 +90,5 @@ public class UserService {
         userRepository.save(user);   // Save changes
     }
 
-    public Optional<UserResponseDto> findUserById(UUID id) {
-        return userRepository.findById(id)
-                .map(userMapper::toResponseDto);
-    }
-
-    public Optional<UserResponseDto> findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .map(userMapper::toResponseDto);
-    }
-
-    public UserResponseDto updateUser(UUID id, UserRequestDto userRequestDto) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        // Update fields
-        existingUser.setUsername(userRequestDto.username());
-        existingUser.setEmail(userRequestDto.email());
-        if (userRequestDto.password() != null && !userRequestDto.password().isBlank()) {
-            String hashedPassword = passwordEncoder.encode(userRequestDto.password());
-            existingUser.setPassword(hashedPassword); // Set hashed password
-        }
-
-        User updatedUser = userRepository.save(existingUser);
-        return userMapper.toResponseDto(updatedUser);
-    }
+     */
 }

@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.swing.*;
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 @Entity
 @NoArgsConstructor
 @Getter
@@ -15,12 +15,13 @@ public class CheckIn {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    private LocalDateTime date;
+    private LocalDate date;
     private String status;
 
-    public CheckIn(User user, LocalDateTime date, String status) {
+    public CheckIn(User user, LocalDate date, String status) {
         this.user = user;
         this.date = date;
         this.status = status;

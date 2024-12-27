@@ -48,24 +48,36 @@ public class UserService {
         }
         User foundUser = user.get();
 
-        if (!foundUser.getName().equals(userResponseDto.name())) {
+        if (userResponseDto.name() != null && !foundUser.getName().equals(userResponseDto.name())) {
             foundUser.setName(userResponseDto.name());
         }
-        if (!foundUser.getFamilyName().equals(userResponseDto.familyName())) {
+        if (userResponseDto.familyName() != null && !foundUser.getFamilyName().equals(userResponseDto.familyName())) {
             foundUser.setFamilyName(userResponseDto.familyName());
         }
-        if (!foundUser.getPassword().equals(userResponseDto.password())) {
+        if (userResponseDto.password() != null && !foundUser.getPassword().equals(userResponseDto.password())) {
             PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-            passwordEncoder.encode(userResponseDto.password());
-            foundUser.setPassword(userResponseDto.password());
+            foundUser.setPassword(passwordEncoder.encode(userResponseDto.password()));
         }
-        if (!foundUser.getDateOfBirth().equals(userResponseDto.dateOfBirth())) {
+        if (userResponseDto.dateOfBirth() != null && !foundUser.getDateOfBirth().equals(userResponseDto.dateOfBirth())) {
             foundUser.setDateOfBirth(userResponseDto.dateOfBirth());
         }
 
         userRepository.save(foundUser);
         return userMapper.toResponseDto(foundUser);
     }
+
+    public UserResponseDto getUserDetails(String username) throws ReliefApplicationException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ReliefApplicationException("User not found"));
+        return userMapper.toResponseDto(user);
+    }
+
+    public void deleteUser(String name) {
+        Optional<User> user = userRepository.findByUsername(name);
+        user.ifPresent(userRepository::delete);
+    }
+
+
 
 
 

@@ -38,15 +38,29 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateUser(
             @RequestBody ModifiedUserDto userResponseDto,
             Principal principal) throws ReliefApplicationException {
-
-        // Extract the logged-in user's email from the token
         String email = principal.getName();
-        System.out.println("Email from principal: " + email);
-
-        // Call service to update user
         UserResponseDto updatedUser = userService.updateUser(userResponseDto, email);
-
         return ResponseEntity.ok(updatedUser);
+    }
+    @GetMapping("/getUser")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<UserResponseDto> getUserDetails(Principal principal) throws ReliefApplicationException {
+        String username = principal.getName();  // Extract email from JWT
+        UserResponseDto user = userService.getUserDetails(username);
+        return ResponseEntity.ok(user);
+    }
+
+    @ApiResponse(responseCode = "201",description = "La supression à été bien prise en compte")
+    @DeleteMapping("/deleteUser")
+    ResponseEntity<Void> deleteUser(Principal principal) {
+        ResponseEntity<Void> re;
+        try {
+            userService.deleteUser(principal.getName());
+            re = new ResponseEntity<>(HttpStatus.OK);
+        }catch(Exception e){
+            re = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return re;
     }
 
 

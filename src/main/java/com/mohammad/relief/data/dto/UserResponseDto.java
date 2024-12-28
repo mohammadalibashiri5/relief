@@ -2,6 +2,7 @@ package com.mohammad.relief.data.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public record UserResponseDto(
@@ -11,4 +12,5 @@ public record UserResponseDto(
         String username,
         String email,
         LocalDateTime createdAt,
-        LocalDate dateOfBirth) {}
+        LocalDate dateOfBirth,
+        List<AddictionResponseDto> addictions) {}

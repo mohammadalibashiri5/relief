@@ -19,23 +19,23 @@ public class Addiction {
     private String description;
     @Enumerated(EnumType.STRING)
     private Severity severityLevel;
-    private Integer yearsOfAddiction;
+    private Integer yearOfAddiction;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Addiction(String name, String description, Severity severityLevel, Integer yearsOfAddiction, User user) {
+    public Addiction(String name, String description, Severity severityLevel, Integer yearOfAddiction, User user) {
         this.name = name;
         this.description = description;
         this.severityLevel = severityLevel;
-        this.yearsOfAddiction = yearsOfAddiction;
+        this.yearOfAddiction = yearOfAddiction;
         this.user = user;
     }
 
-    public Addiction(String name, String description, Severity severityLevel, Integer yearsOfAddiction) {
+    public Addiction(String name, String description, Severity severityLevel, Integer yearOfAddiction) {
         this.name = name;
         this.description = description;
         this.severityLevel = severityLevel;
-        this.yearsOfAddiction = yearsOfAddiction;
+        this.yearOfAddiction = yearOfAddiction;
     }
 }

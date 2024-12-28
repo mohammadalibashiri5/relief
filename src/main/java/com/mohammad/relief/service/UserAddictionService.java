@@ -2,7 +2,6 @@ package com.mohammad.relief.service;
 
 import com.mohammad.relief.data.dto.AddictionRequestDto;
 import com.mohammad.relief.data.dto.AddictionResponseDto;
-import com.mohammad.relief.data.dto.UserResponseDto;
 import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.User;
 import com.mohammad.relief.exception.ReliefApplicationException;
@@ -11,8 +10,6 @@ import com.mohammad.relief.repository.AddictionRepository;
 import com.mohammad.relief.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserAddictionService {

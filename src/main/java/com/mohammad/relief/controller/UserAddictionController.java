@@ -2,15 +2,12 @@ package com.mohammad.relief.controller;
 
 import com.mohammad.relief.data.dto.AddictionRequestDto;
 import com.mohammad.relief.data.dto.AddictionResponseDto;
-import com.mohammad.relief.data.dto.UserResponseDto;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.service.UserAddictionService;
-import com.mohammad.relief.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.security.Principal;
 
@@ -43,7 +40,7 @@ public class UserAddictionController {
     public ResponseEntity<?> updateAddiction(
             @PathVariable String addictionName,
             @RequestBody AddictionRequestDto addictionRequestDto,
-            Principal principal) throws ReliefApplicationException {
+            Principal principal) {
         try {
         // Extract username (email) from token
         String username = principal.getName();

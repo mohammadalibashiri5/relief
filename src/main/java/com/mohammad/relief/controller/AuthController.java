@@ -2,8 +2,6 @@ package com.mohammad.relief.controller;
 
 import com.mohammad.relief.auth.AuthRequest;
 import com.mohammad.relief.auth.AuthResponse;
-import com.mohammad.relief.data.entity.CheckIn;
-import com.mohammad.relief.service.CheckInService;
 import com.mohammad.relief.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final CheckInService checkInService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, CheckInService
-                           checkInService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.checkInService = checkInService;
     }
 
     @PostMapping("/login")

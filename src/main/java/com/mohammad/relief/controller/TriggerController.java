@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @RestController
 @RequestMapping("/api/trigger")
@@ -18,7 +21,7 @@ public class TriggerController {
     public TriggerController(TriggerService triggerService) {
         this.triggerService = triggerService;
     }
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<TriggerResponseDTO> addTrigger(
             @RequestBody @Valid TriggerRequestDTO triggerRequestDTO,
             Principal principal,
@@ -29,5 +32,25 @@ public class TriggerController {
 
         // Return the response with HTTP status CREATED (201)
         return new ResponseEntity<>(triggerResponseDTO, HttpStatus.CREATED);
+    }
+    @PutMapping("/update")
+    public ResponseEntity<TriggerResponseDTO> updateTrigger(
+            @RequestBody @Valid TriggerRequestDTO triggerRequestDTO,
+            Principal principal,
+            @RequestParam String triggerName) throws ReliefApplicationException {
+        String username = principal.getName();
+
+        TriggerResponseDTO triggerResponseDTO = triggerService.updateTrigger(triggerRequestDTO, username,triggerName);
+        return new ResponseEntity<>(triggerResponseDTO, HttpStatus.OK);
+    }
+    @GetMapping("/getAll")
+    public List<TriggerResponseDTO> getAllTrigger(Principal principal) throws ReliefApplicationException {
+        String username = principal.getName();
+        return triggerService.findAll(username);
+    }
+    @DeleteMapping("/delete")
+    public void deleteTrigger(@RequestParam String triggerName, Principal principal) throws ReliefApplicationException {
+        String username = principal.getName();
+        triggerService.deleteTrigger(triggerName, username);
     }
 }

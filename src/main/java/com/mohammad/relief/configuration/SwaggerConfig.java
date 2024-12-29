@@ -17,9 +17,9 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(new Info().title("Java Authentication Service"))
-                .addSecurityItem(new SecurityRequirement().addList("JavaInUseSecurityScheme"))
-                .components(new Components().addSecuritySchemes("JavaInUseSecurityScheme", new SecurityScheme()
-                        .name("JavaInUseSecurityScheme").type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
+                .addSecurityItem(new SecurityRequirement().addList("Use Log in to generate token"))
+                .components(new Components().addSecuritySchemes("Use Log in to generate token", new SecurityScheme()
+                        .name("Use Log in to generate token").type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
 
     }
 }

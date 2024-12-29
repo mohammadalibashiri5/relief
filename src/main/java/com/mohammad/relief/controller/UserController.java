@@ -50,7 +50,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @ApiResponse(responseCode = "201",description = "La supression à été bien prise en compte")
+
     @DeleteMapping("/deleteUser")
     ResponseEntity<Void> deleteUser(Principal principal) {
         ResponseEntity<Void> re;

@@ -41,7 +41,6 @@ public class AuthController {
 
             // Retrieve user details, including roles
             String token = jwtUtil.generateToken(request.getEmail());
-            checkInService.performCheckIn(request.getEmail());
             return ResponseEntity.ok(new AuthResponse(token));
 
         } catch (AuthenticationException ex) {

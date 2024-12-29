@@ -77,6 +77,13 @@ public class UserService {
         user.ifPresent(userRepository::delete);
     }
 
+    public User findByUsername(String username) throws ReliefApplicationException {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            return user.get();
+        }else throw new ReliefApplicationException("No such a user");
+    }
+
 
 
 

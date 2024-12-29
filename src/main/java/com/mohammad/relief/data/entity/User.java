@@ -46,6 +46,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CheckIn> checkIns = new ArrayList<>();
 
+    private Integer streak;
+    private Integer totalCheckIns;  // Optional for milestones
+    private Integer missedCheckIns;  // Optional to track misses
+
+
     @ManyToMany
     @JoinTable(
             name = "user_achievements",

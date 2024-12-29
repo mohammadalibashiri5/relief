@@ -11,5 +11,9 @@ import java.util.UUID;
 
 @Repository
 public interface CheckInRepository extends JpaRepository<CheckIn, Integer> {
-    Optional<CheckIn> findByUserIdAndDate(UUID id, LocalDate today);
+    Optional<CheckIn> findByUserIdAndDate(UUID userId, LocalDate date);
+
+    List<CheckIn> findByUserId(UUID userId);
+
+    Boolean existsByUserIdAndDate(UUID id, LocalDate yesterday);
 }

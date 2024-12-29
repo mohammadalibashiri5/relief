@@ -1,9 +1,9 @@
 package com.mohammad.relief.service;
 
 
-import com.mohammad.relief.data.dto.ModifiedUserDto;
-import com.mohammad.relief.data.dto.UserRequestDto;
-import com.mohammad.relief.data.dto.UserResponseDto;
+import com.mohammad.relief.data.dto.response.ModifiedUserDto;
+import com.mohammad.relief.data.dto.request.UserRequestDto;
+import com.mohammad.relief.data.dto.response.UserResponseDto;
 import com.mohammad.relief.data.entity.User;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.UserMapper;

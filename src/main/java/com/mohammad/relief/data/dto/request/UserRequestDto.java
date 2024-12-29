@@ -1,4 +1,4 @@
-package com.mohammad.relief.data.dto;
+package com.mohammad.relief.data.dto.request;
 
 import jakarta.validation.constraints.*;
 

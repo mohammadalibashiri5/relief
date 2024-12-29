@@ -1,7 +1,7 @@
 package com.mohammad.relief.mapper;
 
-import com.mohammad.relief.data.dto.UserRequestDto;
-import com.mohammad.relief.data.dto.UserResponseDto;
+import com.mohammad.relief.data.dto.request.UserRequestDto;
+import com.mohammad.relief.data.dto.response.UserResponseDto;
 import com.mohammad.relief.data.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

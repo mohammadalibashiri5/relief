@@ -1,7 +1,7 @@
 package com.mohammad.relief.controller;
 
-import com.mohammad.relief.data.dto.AddictionRequestDto;
-import com.mohammad.relief.data.dto.AddictionResponseDto;
+import com.mohammad.relief.data.dto.request.AddictionRequestDto;
+import com.mohammad.relief.data.dto.response.AddictionResponseDto;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.service.UserAddictionService;
 import org.springframework.http.HttpStatus;

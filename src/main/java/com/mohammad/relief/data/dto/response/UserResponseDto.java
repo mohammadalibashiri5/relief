@@ -1,4 +1,4 @@
-package com.mohammad.relief.data.dto;
+package com.mohammad.relief.data.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

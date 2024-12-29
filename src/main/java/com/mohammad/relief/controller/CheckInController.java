@@ -1,10 +1,9 @@
 package com.mohammad.relief.controller;
 
-import com.mohammad.relief.data.dto.CheckInResponseDto;
+import com.mohammad.relief.data.dto.response.CheckInResponseDto;
 import com.mohammad.relief.data.entity.CheckIn;
 import com.mohammad.relief.data.entity.User;
 import com.mohammad.relief.exception.ReliefApplicationException;
-import com.mohammad.relief.repository.UserRepository;
 import com.mohammad.relief.service.CheckInService;
 import com.mohammad.relief.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/check-in")

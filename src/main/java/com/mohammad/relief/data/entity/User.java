@@ -50,6 +50,8 @@ public class User {
     private Integer totalCheckIns;  // Optional for milestones
     private Integer missedCheckIns;  // Optional to track misses
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Trigger> triggers = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -78,14 +80,24 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.addictions = addictions;
     }
-    public void addAddiction(Addiction addiction) {
-        addiction.setUser(this);
-        this.addictions.add(addiction);
-    }
 
-    public void removeAddiction(Addiction addiction) {
-        addiction.setUser(null);
-        this.addictions.remove(addiction);
+    public User(String name, String familyName, String username, String email, String password, LocalDateTime createdAt, LocalDateTime updatedAt, String role, LocalDate dateOfBirth, List<Addiction> addictions, List<CheckIn> checkIns, Integer streak, Integer totalCheckIns, Integer missedCheckIns, List<Trigger> triggers, List<Achievement> achievements) {
+        this.name = name;
+        this.familyName = familyName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.role = role;
+        this.dateOfBirth = dateOfBirth;
+        this.addictions = addictions;
+        this.checkIns = checkIns;
+        this.streak = streak;
+        this.totalCheckIns = totalCheckIns;
+        this.missedCheckIns = missedCheckIns;
+        this.triggers = triggers;
+        this.achievements = achievements;
     }
 
     @PreUpdate

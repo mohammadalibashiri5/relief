@@ -1,7 +1,7 @@
 package com.mohammad.relief.service;
 
-import com.mohammad.relief.data.dto.AddictionRequestDto;
-import com.mohammad.relief.data.dto.AddictionResponseDto;
+import com.mohammad.relief.data.dto.request.AddictionRequestDto;
+import com.mohammad.relief.data.dto.response.AddictionResponseDto;
 import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.User;
 import com.mohammad.relief.exception.ReliefApplicationException;

@@ -1,8 +1,10 @@
-package com.mohammad.relief.data.dto;
+package com.mohammad.relief.data.dto.request;
+
 
 import com.mohammad.relief.data.entity.enums.Severity;
 
-public record AddictionResponseDto(
+
+public record AddictionRequestDto(
         String name,
         String description,
         Severity severityLevel,

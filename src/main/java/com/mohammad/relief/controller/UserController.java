@@ -1,8 +1,8 @@
 package com.mohammad.relief.controller;
 
-import com.mohammad.relief.data.dto.ModifiedUserDto;
-import com.mohammad.relief.data.dto.UserRequestDto;
-import com.mohammad.relief.data.dto.UserResponseDto;
+import com.mohammad.relief.data.dto.response.ModifiedUserDto;
+import com.mohammad.relief.data.dto.request.UserRequestDto;
+import com.mohammad.relief.data.dto.response.UserResponseDto;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.service.UserService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

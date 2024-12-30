@@ -23,6 +23,8 @@ public class Addiction {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    private String imageUrl;
+    private int streakCount = 0;
 
     public Addiction(String name, String description, Severity severityLevel, Integer yearOfAddiction, User user) {
         this.name = name;

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.security.Principal;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -43,7 +43,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
     @GetMapping("/getUser")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserResponseDto> getUserDetails(Principal principal) throws ReliefApplicationException {
         String username = principal.getName();  // Extract email from JWT
         UserResponseDto user = userService.getUserDetails(username);
@@ -52,13 +52,13 @@ public class UserController {
 
 
     @DeleteMapping("/deleteUser")
-    ResponseEntity<Void> deleteUser(Principal principal) {
+    ResponseEntity<Void> deleteUser(Principal principal) throws ReliefApplicationException {
         ResponseEntity<Void> re;
         try {
             userService.deleteUser(principal.getName());
             re = new ResponseEntity<>(HttpStatus.OK);
         }catch(Exception e){
-            re = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ReliefApplicationException("Error "+e.getMessage());
         }
         return re;
     }

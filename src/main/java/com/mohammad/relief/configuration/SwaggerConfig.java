@@ -16,7 +16,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
 
         return new OpenAPI()
-                .info(new Info().title("Java Authentication Service"))
+                .info(new Info().title("Relief API"))
                 .addSecurityItem(new SecurityRequirement().addList("Use Log in to generate token"))
                 .components(new Components().addSecuritySchemes("Use Log in to generate token", new SecurityScheme()
                         .name("Use Log in to generate token").type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));

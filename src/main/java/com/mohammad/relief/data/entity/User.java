@@ -46,7 +46,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CheckIn> checkIns = new ArrayList<>();
 
-    private Integer streak;
+    private Integer globalStreak;
     private Integer totalCheckIns;  // Optional for milestones
     private Integer missedCheckIns;  // Optional to track misses
 
@@ -81,7 +81,7 @@ public class User {
         this.addictions = addictions;
     }
 
-    public User(String name, String familyName, String username, String email, String password, LocalDateTime createdAt, LocalDateTime updatedAt, String role, LocalDate dateOfBirth, List<Addiction> addictions, List<CheckIn> checkIns, Integer streak, Integer totalCheckIns, Integer missedCheckIns, List<Trigger> triggers, List<Achievement> achievements) {
+    public User(String name, String familyName, String username, String email, String password, LocalDateTime createdAt, LocalDateTime updatedAt, String role, LocalDate dateOfBirth, List<Addiction> addictions, List<CheckIn> checkIns, Integer globalStreak, Integer totalCheckIns, Integer missedCheckIns, List<Trigger> triggers, List<Achievement> achievements) {
         this.name = name;
         this.familyName = familyName;
         this.username = username;
@@ -93,7 +93,7 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.addictions = addictions;
         this.checkIns = checkIns;
-        this.streak = streak;
+        this.globalStreak= globalStreak;
         this.totalCheckIns = totalCheckIns;
         this.missedCheckIns = missedCheckIns;
         this.triggers = triggers;

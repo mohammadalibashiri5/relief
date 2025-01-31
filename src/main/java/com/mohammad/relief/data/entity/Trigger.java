@@ -23,6 +23,8 @@ public class Trigger {
     private String triggerType;
     private String triggerDescription;
     private String avoidanceStrategy;
+    private int repetitionCount = 0;  // Track how often this trigger causes relapse
+
 
     public Trigger(String triggerName, User user, Addiction addiction, String triggerType, String triggerDescription, String avoidanceStrategy) {
         this.triggerName = triggerName;

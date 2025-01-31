@@ -49,7 +49,8 @@ public class UserAddictionService {
                 addiction.getName(),
                 addiction.getDescription(),
                 addiction.getSeverityLevel(),
-                addiction.getYearOfAddiction()
+                addiction.getYearOfAddiction(),
+                addiction.getStreakCount()
         );
     }
 

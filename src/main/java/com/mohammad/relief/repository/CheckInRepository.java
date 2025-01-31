@@ -13,7 +13,9 @@ import java.util.UUID;
 public interface CheckInRepository extends JpaRepository<CheckIn, Integer> {
     Optional<CheckIn> findByUserIdAndDate(UUID userId, LocalDate date);
 
-    List<CheckIn> findByUserId(UUID userId);
+    Optional<CheckIn> findByUserId(UUID userId);
 
     Boolean existsByUserIdAndDate(UUID id, LocalDate yesterday);
+
+    List<CheckIn> findTop7ByUserIdOrderByDateDesc(UUID id);
 }

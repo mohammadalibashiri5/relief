@@ -6,7 +6,8 @@ public record TriggerResponseDTO(
         String addictionName,
         String triggerType,
         String triggerDescription,
-        String avoidanceStrategy
+        String avoidanceStrategy,
+        int repetitionCount
 
 ) {
 }

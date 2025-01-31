@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -37,30 +38,31 @@ public class CheckInService {
         checkInRepository.findByUserIdAndDate(user.getId(), yesterday).ifPresent(checkIn -> {
             if (!checkIn.getStatus().equals("completed")) {
                 checkIn.setStatus("missed");
+                checkIn.setDate(yesterday);
                 checkInRepository.save(checkIn);
             }
         });
 
-        // Track streaks
-        Integer streak = user.getStreak();
-        if (streak == null) {
-            streak = 0;
-        }
-
-        // Check if the user checked in yesterday
-        boolean checkedInYesterday = checkInRepository.existsByUserIdAndDate(user.getId(), yesterday);
-
-        if (checkedInYesterday) {
-            streak++;  // Increment if they checked in yesterday
-        } else {
-            streak = 1;  // Reset to 1 if missed a day
-        }
-
-        user.setStreak(streak);
         userRepository.save(user);
 
-        CheckIn newCheckIn = new CheckIn(user, today, "completed");
+        CheckIn newCheckIn = new CheckIn(user, today, "completed",getStreak(user));
         return checkInRepository.save(newCheckIn);
+    }
+
+    private Integer getStreak(User user) {
+        List<CheckIn> checkIns = checkInRepository.findTop7ByUserIdOrderByDateDesc(user.getId()); // Get last 7 check-ins
+        int streak = 0;
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        for (CheckIn checkIn : checkIns) {
+            if (checkIn.getDate().equals(yesterday) && checkIn.getStatus().equals("completed")) {
+                streak++;
+                yesterday = yesterday.minusDays(1);
+            } else {
+                break;
+            }
+        }
+        return streak + 1;
     }
 
 
@@ -68,6 +70,6 @@ public class CheckInService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return checkInRepository.findByUserId(user.getId());
+        return null;//checkInRepository.findByUserId(user.getId());
     }
 }

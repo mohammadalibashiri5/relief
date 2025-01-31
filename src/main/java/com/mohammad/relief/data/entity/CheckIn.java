@@ -20,10 +20,12 @@ public class CheckIn {
     private User user;
     private LocalDate date;
     private String status;
+    private Integer streak;
 
-    public CheckIn(User user, LocalDate date, String status) {
+    public CheckIn(User user, LocalDate date, String status, Integer streak) {
         this.user = user;
         this.date = date;
         this.status = status;
+        this.streak = streak;
     }
 }

@@ -45,7 +45,7 @@ public class UserController {
     @GetMapping("/getUser")
     @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserResponseDto> getUserDetails(Principal principal) throws ReliefApplicationException {
-        String username = principal.getName();  // Extract email from JWT
+        String username = principal.getName();
         UserResponseDto user = userService.getUserDetails(username);
         return ResponseEntity.ok(user);
     }

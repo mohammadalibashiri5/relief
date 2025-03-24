@@ -1,10 +1,16 @@
 package com.mohammad.relief.service;
 
+import com.mohammad.relief.data.dto.response.CheckInResponseDto;
+import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.CheckIn;
 import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.enums.StreakLevel;
 import com.mohammad.relief.exception.ReliefApplicationException;
+import com.mohammad.relief.mapper.CheckInMapper;
+import com.mohammad.relief.repository.AddictionRepository;
 import com.mohammad.relief.repository.CheckInRepository;
 import com.mohammad.relief.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,63 +19,54 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CheckInService {
 
     private final CheckInRepository checkInRepository;
     private final UserRepository userRepository;
+    private final AddictionRepository addictionRepository;
+    private final CheckInMapper checkInMapper;
 
-    public CheckInService(CheckInRepository checkInRepository, UserRepository userRepository) {
-        this.checkInRepository = checkInRepository;
-        this.userRepository = userRepository;
-    }
-
-    public CheckIn performCheckIn(String username) throws ReliefApplicationException {
+    public CheckInResponseDto register(String username, String addictionName, boolean isClean) throws ReliefApplicationException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ReliefApplicationException("User not found"));
 
-        LocalDate today = LocalDate.now();
-        Optional<CheckIn> existingCheckIn = checkInRepository.findByUserIdAndDate(user.getId(), today);
+        Addiction addiction = addictionRepository.findByName(addictionName)
+                .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
 
-        if (existingCheckIn.isPresent()) {
-            return existingCheckIn.get();
-        }
+        // Fetch or create CheckIn
+        CheckIn checkIn = checkInRepository.findByUserAndAddiction(user, addiction).orElse(new CheckIn());
 
-        LocalDate yesterday = today.minusDays(1);
-        checkInRepository.findByUserIdAndDate(user.getId(), yesterday).ifPresent(checkIn -> {
-            if (!checkIn.getStatus().equals("completed")) {
-                checkIn.setStatus("missed");
-                checkIn.setDate(yesterday);
-                checkInRepository.save(checkIn);
+        // Ensure null values are handled
+        checkIn.setCurrentStreak(Objects.requireNonNullElse(checkIn.getCurrentStreak(), 0));
+        checkIn.setLongestStreak(Objects.requireNonNullElse(checkIn.getLongestStreak(), 0));
+
+        if (!isClean) {
+            checkIn.setCurrentStreak(0);
+            checkIn.setLevel(StreakLevel.NONE);
+        } else {
+            checkIn.setCurrentStreak(checkIn.getCurrentStreak() + 1);
+            if (checkIn.getCurrentStreak() > checkIn.getLongestStreak()) {
+                checkIn.setLongestStreak(checkIn.getCurrentStreak());
             }
-        });
+            checkIn.setLevel(getLevel(checkIn.getCurrentStreak()));
+        }
+        checkIn.setLastCheckinDate(LocalDate.now());
 
-        userRepository.save(user);
+        CheckIn savedCheckIn = checkInRepository.save(checkIn);
 
-        CheckIn newCheckIn = new CheckIn(user, today, "completed",getStreak(user));
-        return checkInRepository.save(newCheckIn);
+        return checkInMapper.toDto(savedCheckIn);
     }
 
-    private Integer getStreak(User user) {
-        List<CheckIn> checkIns = checkInRepository.findTop7ByUserIdOrderByDateDesc(user.getId()); // Get last 7 check-ins
-        int streak = 0;
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-
-        for (CheckIn checkIn : checkIns) {
-            if (checkIn.getDate().equals(yesterday) && checkIn.getStatus().equals("completed")) {
-                streak++;
-                yesterday = yesterday.minusDays(1);
-            } else {
-                break;
-            }
-        }
-        return streak + 1;
+    private StreakLevel getLevel(int streak) {
+        if (streak >= 365) return StreakLevel.PLATINUM;
+        if (streak >= 100) return StreakLevel.GOLD;
+        if (streak >= 30) return StreakLevel.SILVER;
+        if (streak >= 7) return StreakLevel.BRONZE;
+        return StreakLevel.NONE;
     }
 
-
-    public List<CheckIn> getUserCheckInHistory(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        return null;//checkInRepository.findByUserId(user.getId());
+    public List<CheckIn> getAllStreaks() {
+        return checkInRepository.findAll();
     }
 }

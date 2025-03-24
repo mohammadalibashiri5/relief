@@ -1,31 +1,31 @@
 package com.mohammad.relief.data.entity;
 
+import com.mohammad.relief.data.entity.enums.StreakLevel;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-
 import java.time.LocalDate;
+
 @Entity
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 public class CheckIn {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    private Long id;
+    @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
-    private LocalDate date;
-    private String status;
-    private Integer streak;
+    @OneToOne
+    @JoinColumn(name = "addiction_id")
+    private Addiction addiction;
+    private LocalDate startDate;
+    private Integer currentStreak;
+    private Integer longestStreak;
+    private LocalDate lastCheckinDate;
+    private Enum<StreakLevel> level;
 
-    public CheckIn(User user, LocalDate date, String status, Integer streak) {
-        this.user = user;
-        this.date = date;
-        this.status = status;
-        this.streak = streak;
-    }
 }

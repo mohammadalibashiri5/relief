@@ -49,8 +49,7 @@ public class UserAddictionService {
                 addiction.getName(),
                 addiction.getDescription(),
                 addiction.getSeverityLevel(),
-                addiction.getYearOfAddiction(),
-                addiction.getStreakCount()
+                addiction.getYearOfAddiction()
         );
     }
 
@@ -100,4 +99,8 @@ public class UserAddictionService {
     }
 
 
+    public Addiction getAddictionByName(String addictionName) throws ReliefApplicationException {
+        return addictionRepository.findByName(addictionName)
+                .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
+    }
 }

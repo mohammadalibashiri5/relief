@@ -1,6 +1,8 @@
 package com.mohammad.relief.repository;
 
+import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.CheckIn;
+import com.mohammad.relief.data.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,11 +13,5 @@ import java.util.UUID;
 
 @Repository
 public interface CheckInRepository extends JpaRepository<CheckIn, Integer> {
-    Optional<CheckIn> findByUserIdAndDate(UUID userId, LocalDate date);
-
-    Optional<CheckIn> findByUserId(UUID userId);
-
-    Boolean existsByUserIdAndDate(UUID id, LocalDate yesterday);
-
-    List<CheckIn> findTop7ByUserIdOrderByDateDesc(UUID id);
+    Optional<CheckIn> findByUserAndAddiction(User user, Addiction addiction);
 }

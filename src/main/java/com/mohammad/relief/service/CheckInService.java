@@ -35,7 +35,15 @@ public class CheckInService {
                 .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
 
         // Fetch or create CheckIn
-        CheckIn checkIn = checkInRepository.findByUserAndAddiction(user, addiction).orElse(new CheckIn());
+        CheckIn checkIn = checkInRepository.findByUserAndAddiction(user, addiction)
+                .orElseGet(() -> {
+
+                    CheckIn newCheckIn = new CheckIn();
+                    newCheckIn.setUser(user);
+                    newCheckIn.setAddiction(addiction);
+                    newCheckIn.setStartDate(LocalDate.now()); // Ensure a start date is set
+                    return newCheckIn;
+                });
 
         // Ensure null values are handled
         checkIn.setCurrentStreak(Objects.requireNonNullElse(checkIn.getCurrentStreak(), 0));
@@ -54,6 +62,10 @@ public class CheckInService {
         checkIn.setLastCheckinDate(LocalDate.now());
 
         CheckIn savedCheckIn = checkInRepository.save(checkIn);
+
+        System.out.println("User: " + checkIn.getUser().getUsername());
+        System.out.println("Addiction: " + checkIn.getAddiction().getName());
+        System.out.println("Saved CheckIn: " + savedCheckIn);
 
         return checkInMapper.toDto(savedCheckIn);
     }

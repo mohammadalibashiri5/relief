@@ -14,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,10 +61,6 @@ public class CheckInService {
 
         CheckIn savedCheckIn = checkInRepository.save(checkIn);
 
-        System.out.println("User: " + checkIn.getUser().getUsername());
-        System.out.println("Addiction: " + checkIn.getAddiction().getName());
-        System.out.println("Saved CheckIn: " + savedCheckIn);
-
         return checkInMapper.toDto(savedCheckIn);
     }
 
@@ -76,9 +70,5 @@ public class CheckInService {
         if (streak >= 30) return StreakLevel.SILVER;
         if (streak >= 7) return StreakLevel.BRONZE;
         return StreakLevel.NONE;
-    }
-
-    public List<CheckIn> getAllStreaks() {
-        return checkInRepository.findAll();
     }
 }

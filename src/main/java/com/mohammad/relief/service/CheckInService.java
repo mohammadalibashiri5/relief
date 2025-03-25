@@ -7,9 +7,7 @@ import com.mohammad.relief.data.entity.User;
 import com.mohammad.relief.data.entity.enums.StreakLevel;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.CheckInMapper;
-import com.mohammad.relief.repository.AddictionRepository;
 import com.mohammad.relief.repository.CheckInRepository;
-import com.mohammad.relief.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,29 +19,51 @@ import java.util.Objects;
 public class CheckInService {
 
     private final CheckInRepository checkInRepository;
-    private final UserRepository userRepository;
-    private final AddictionRepository addictionRepository;
+    private final UserService userService;
+    private final UserAddictionService addictionService;
     private final CheckInMapper checkInMapper;
 
     public CheckInResponseDto register(String username, String addictionName, boolean isClean) throws ReliefApplicationException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ReliefApplicationException("User not found"));
 
-        Addiction addiction = addictionRepository.findByName(addictionName)
-                .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
+        User user = userService.findByUsername(username);
 
-        // Fetch or create CheckIn
-        CheckIn checkIn = checkInRepository.findByUserAndAddiction(user, addiction)
+        Addiction addiction = addictionService.getAddictionByName(addictionName);
+
+        if (isUserCheckedInToday(user, addiction)) {
+            throw new ReliefApplicationException("You have already checked in today.");
+        }
+
+        CheckIn checkIn = getOrCreateCheckIn(user, addiction);
+        updateCheckInStatus(checkIn, isClean);
+
+        CheckIn savedCheckIn = checkInRepository.save(checkIn);
+        return checkInMapper.toDto(savedCheckIn);
+    }
+
+    private StreakLevel getLevel(int streak) {
+        if (streak >= 365) return StreakLevel.PLATINUM;
+        if (streak >= 100) return StreakLevel.GOLD;
+        if (streak >= 30) return StreakLevel.SILVER;
+        if (streak >= 7) return StreakLevel.BRONZE;
+        return StreakLevel.NONE;
+    }
+
+    private boolean isUserCheckedInToday(User user, Addiction addiction) {
+        return checkInRepository.findByUserAndAddictionAndLastCheckinDate(user, addiction, LocalDate.now()).isPresent();
+    }
+
+    private CheckIn getOrCreateCheckIn(User user, Addiction addiction) {
+        return checkInRepository.findByUserAndAddiction(user, addiction)
                 .orElseGet(() -> {
-
                     CheckIn newCheckIn = new CheckIn();
                     newCheckIn.setUser(user);
                     newCheckIn.setAddiction(addiction);
-                    newCheckIn.setStartDate(LocalDate.now()); // Ensure a start date is set
+                    newCheckIn.setStartDate(LocalDate.now());
                     return newCheckIn;
                 });
+    }
 
-        // Ensure null values are handled
+    private void updateCheckInStatus(CheckIn checkIn, boolean isClean) {
         checkIn.setCurrentStreak(Objects.requireNonNullElse(checkIn.getCurrentStreak(), 0));
         checkIn.setLongestStreak(Objects.requireNonNullElse(checkIn.getLongestStreak(), 0));
 
@@ -58,17 +78,5 @@ public class CheckInService {
             checkIn.setLevel(getLevel(checkIn.getCurrentStreak()));
         }
         checkIn.setLastCheckinDate(LocalDate.now());
-
-        CheckIn savedCheckIn = checkInRepository.save(checkIn);
-
-        return checkInMapper.toDto(savedCheckIn);
-    }
-
-    private StreakLevel getLevel(int streak) {
-        if (streak >= 365) return StreakLevel.PLATINUM;
-        if (streak >= 100) return StreakLevel.GOLD;
-        if (streak >= 30) return StreakLevel.SILVER;
-        if (streak >= 7) return StreakLevel.BRONZE;
-        return StreakLevel.NONE;
     }
 }

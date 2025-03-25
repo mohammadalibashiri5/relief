@@ -37,8 +37,8 @@ public class AuthController {
             return ResponseEntity.ok(new AuthResponse(token));
 
         } catch (AuthenticationException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid email or password.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(ex.getMessage());
+                   // .body("Invalid email or password.");
         }
     }
 }

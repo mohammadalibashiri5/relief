@@ -16,11 +16,11 @@ public class CheckIn {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @OneToOne
-    @JoinColumn(name = "addiction_id")
+    @ManyToOne
+    @JoinColumn(name = "addiction_id", nullable = false)
     private Addiction addiction;
     private LocalDate startDate;
     private Integer currentStreak;

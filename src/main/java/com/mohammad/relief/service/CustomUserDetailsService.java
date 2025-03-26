@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Load user from the database
         Optional<User> userOptional = userRepository.findByEmail(email);
 
-        com.mohammad.relief.data.entity.User user = userOptional.orElseThrow(() ->
+        User user = userOptional.orElseThrow(() ->
                 new UsernameNotFoundException("User not found with username: " + email));
 
         // Return a Spring Security User object

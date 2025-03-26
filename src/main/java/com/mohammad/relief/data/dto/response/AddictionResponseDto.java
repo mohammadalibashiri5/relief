@@ -6,7 +6,6 @@ public record AddictionResponseDto(
         String name,
         String description,
         Severity severityLevel,
-        Integer yearOfAddiction,
-        int streakCount
+        Integer yearOfAddiction
 ) {
 }

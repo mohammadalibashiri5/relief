@@ -1,75 +1,82 @@
 package com.mohammad.relief.service;
 
+import com.mohammad.relief.data.dto.response.CheckInResponseDto;
+import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.CheckIn;
 import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.enums.StreakLevel;
 import com.mohammad.relief.exception.ReliefApplicationException;
+import com.mohammad.relief.mapper.CheckInMapper;
 import com.mohammad.relief.repository.CheckInRepository;
-import com.mohammad.relief.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CheckInService {
 
     private final CheckInRepository checkInRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final UserAddictionService addictionService;
+    private final CheckInMapper checkInMapper;
 
-    public CheckInService(CheckInRepository checkInRepository, UserRepository userRepository) {
-        this.checkInRepository = checkInRepository;
-        this.userRepository = userRepository;
-    }
+    public CheckInResponseDto register(String username, String addictionName, boolean isClean) throws ReliefApplicationException {
 
-    public CheckIn performCheckIn(String username) throws ReliefApplicationException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ReliefApplicationException("User not found"));
+        User user = userService.findByUsername(username);
 
-        LocalDate today = LocalDate.now();
-        Optional<CheckIn> existingCheckIn = checkInRepository.findByUserIdAndDate(user.getId(), today);
+        Addiction addiction = addictionService.getAddictionByName(addictionName);
 
-        if (existingCheckIn.isPresent()) {
-            return existingCheckIn.get();
+        if (isUserCheckedInToday(user, addiction)) {
+            throw new ReliefApplicationException("You have already checked in today.");
         }
 
-        LocalDate yesterday = today.minusDays(1);
-        checkInRepository.findByUserIdAndDate(user.getId(), yesterday).ifPresent(checkIn -> {
-            if (!checkIn.getStatus().equals("completed")) {
-                checkIn.setStatus("missed");
-                checkIn.setDate(yesterday);
-                checkInRepository.save(checkIn);
-            }
-        });
+        CheckIn checkIn = getOrCreateCheckIn(user, addiction);
+        updateCheckInStatus(checkIn, isClean);
 
-        userRepository.save(user);
-
-        CheckIn newCheckIn = new CheckIn(user, today, "completed",getStreak(user));
-        return checkInRepository.save(newCheckIn);
+        CheckIn savedCheckIn = checkInRepository.save(checkIn);
+        return checkInMapper.toDto(savedCheckIn);
     }
 
-    private Integer getStreak(User user) {
-        List<CheckIn> checkIns = checkInRepository.findTop7ByUserIdOrderByDateDesc(user.getId()); // Get last 7 check-ins
-        int streak = 0;
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+    private StreakLevel getLevel(int streak) {
+        if (streak >= 365) return StreakLevel.PLATINUM;
+        if (streak >= 100) return StreakLevel.GOLD;
+        if (streak >= 30) return StreakLevel.SILVER;
+        if (streak >= 7) return StreakLevel.BRONZE;
+        return StreakLevel.NONE;
+    }
 
-        for (CheckIn checkIn : checkIns) {
-            if (checkIn.getDate().equals(yesterday) && checkIn.getStatus().equals("completed")) {
-                streak++;
-                yesterday = yesterday.minusDays(1);
-            } else {
-                break;
+    private boolean isUserCheckedInToday(User user, Addiction addiction) {
+        return checkInRepository.findByUserAndAddictionAndLastCheckinDate(user, addiction, LocalDate.now()).isPresent();
+    }
+
+    private CheckIn getOrCreateCheckIn(User user, Addiction addiction) {
+        return checkInRepository.findByUserAndAddiction(user, addiction)
+                .orElseGet(() -> {
+                    CheckIn newCheckIn = new CheckIn();
+                    newCheckIn.setUser(user);
+                    newCheckIn.setAddiction(addiction);
+                    newCheckIn.setStartDate(LocalDate.now());
+                    return newCheckIn;
+                });
+    }
+
+    private void updateCheckInStatus(CheckIn checkIn, boolean isClean) {
+        checkIn.setCurrentStreak(Objects.requireNonNullElse(checkIn.getCurrentStreak(), 0));
+        checkIn.setLongestStreak(Objects.requireNonNullElse(checkIn.getLongestStreak(), 0));
+
+        if (!isClean) {
+            checkIn.setCurrentStreak(0);
+            checkIn.setLevel(StreakLevel.NONE);
+        } else {
+            checkIn.setCurrentStreak(checkIn.getCurrentStreak() + 1);
+            if (checkIn.getCurrentStreak() > checkIn.getLongestStreak()) {
+                checkIn.setLongestStreak(checkIn.getCurrentStreak());
             }
+            checkIn.setLevel(getLevel(checkIn.getCurrentStreak()));
         }
-        return streak + 1;
-    }
-
-
-    public List<CheckIn> getUserCheckInHistory(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        return null;//checkInRepository.findByUserId(user.getId());
+        checkIn.setLastCheckinDate(LocalDate.now());
     }
 }

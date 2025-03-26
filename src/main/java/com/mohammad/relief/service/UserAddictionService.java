@@ -9,24 +9,21 @@ import com.mohammad.relief.mapper.AddictionMapper;
 import com.mohammad.relief.repository.AddictionRepository;
 import com.mohammad.relief.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserAddictionService {
-    private final UserRepository userRepository;
     private final AddictionRepository addictionRepository;
     private final AddictionMapper addictionMapper;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public UserAddictionService(UserRepository userRepository, AddictionRepository addictionRepository, AddictionMapper addictionMapper) {
-        this.userRepository = userRepository;
-        this.addictionRepository = addictionRepository;
-        this.addictionMapper = addictionMapper;
-    }
 
     public AddictionResponseDto assignAddictionToUser(AddictionRequestDto addictionDto, String username) throws ReliefApplicationException {
         // Retrieve user by username
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ReliefApplicationException("User not found"));
+        User user = userService.findByUsername(username);
 
         // Check if addiction already exists for the user
         boolean addictionExists = user.getAddictions().stream()
@@ -49,8 +46,7 @@ public class UserAddictionService {
                 addiction.getName(),
                 addiction.getDescription(),
                 addiction.getSeverityLevel(),
-                addiction.getYearOfAddiction(),
-                addiction.getStreakCount()
+                addiction.getYearOfAddiction()
         );
     }
 
@@ -61,9 +57,7 @@ public class UserAddictionService {
                                                       String username
     ) throws ReliefApplicationException {
 
-        // Get the user by username
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ReliefApplicationException("User not found"));
+        User user = userService.findByUsername(username);
 
         // Find the addiction by name
         Addiction addiction = user.getAddictions().stream()
@@ -100,4 +94,13 @@ public class UserAddictionService {
     }
 
 
+    public Addiction getAddictionByName(String addictionName) {
+        // Save before using it in CheckIn
+        return addictionRepository.findByName(addictionName)
+                .orElseGet(() -> {
+                    Addiction newAddiction = new Addiction();
+                    newAddiction.setName(addictionName);
+                    return addictionRepository.save(newAddiction); // Save before using it in CheckIn
+                });
+    }
 }

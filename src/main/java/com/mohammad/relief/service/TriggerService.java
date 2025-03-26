@@ -7,11 +7,9 @@ import com.mohammad.relief.data.entity.Trigger;
 import com.mohammad.relief.data.entity.User;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.TriggerMapper;
-import com.mohammad.relief.repository.AddictionRepository;
 import com.mohammad.relief.repository.TriggerRepository;
 import com.mohammad.relief.repository.UserRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,40 +17,32 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TriggerService {
-    private final UserRepository userRepository;
-    private final AddictionRepository addictionRepository;
-    private final TriggerRepository triggerRepository;
-    private final TriggerMapper triggerMapper;
 
-    public TriggerService(UserRepository userRepository, AddictionRepository addictionRepository, TriggerRepository triggerRepository, TriggerMapper triggerMapper) {
-        this.userRepository = userRepository;
-        this.addictionRepository = addictionRepository;
-        this.triggerRepository = triggerRepository;
-        this.triggerMapper = triggerMapper;
-    }
+    private final UserRepository userRepository;
+    private final TriggerMapper triggerMapper;
+    private final TriggerRepository triggerRepository;
+    private final UserService userService;
+    private final UserAddictionService addictionService;
+
 
     public TriggerResponseDTO addTrigger(TriggerRequestDTO triggerRequestDTO, String username, String addictionName) throws ReliefApplicationException {
-        // Fetch the User by username
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ReliefApplicationException("User not found"));
 
-        // Fetch the Addiction by name
-        Addiction addiction = addictionRepository.findByName(addictionName)
-                .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
+        User user = userService.findByUsername(username);
+
+        Addiction addiction = addictionService.getAddictionByName(addictionName);
 
         Trigger trigger = triggerMapper.toEntity(triggerRequestDTO);
         trigger.setUser(user);
         trigger.setAddiction(addiction);
 
-
-        // Save the Trigger entity to the database
         Trigger savedTrigger = triggerRepository.save(trigger);
-        // Return the response DTO
-        // Map the saved Trigger entity to the response DTO
+
 
         return triggerMapper.toDto(savedTrigger);
     }
+
     public TriggerResponseDTO updateTrigger(TriggerRequestDTO triggerRequestDTO, String username, String name) throws ReliefApplicationException {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new ReliefApplicationException("User not found"));
         Optional<Trigger> triggerName = triggerRepository.findByTriggerName(name);
@@ -86,6 +76,7 @@ public class TriggerService {
             throw new ReliefApplicationException("User not found");
         }else return triggerRepository.findAll().stream().map(triggerMapper::toDto).collect(Collectors.toList());
     }
+
     public void deleteTrigger( String triggerName,String username) throws ReliefApplicationException {
         Optional<User> user = userRepository.findByUsername(username);
         Optional<Trigger> name = triggerRepository.findByTriggerName(triggerName);

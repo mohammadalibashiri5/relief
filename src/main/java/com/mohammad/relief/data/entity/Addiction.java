@@ -4,10 +4,11 @@ import com.mohammad.relief.data.entity.enums.Severity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 public class Addiction {
@@ -24,20 +25,5 @@ public class Addiction {
     @JoinColumn(name = "user_id")
     private User user;
     private String imageUrl;
-    private int streakCount = 0;
 
-    public Addiction(String name, String description, Severity severityLevel, Integer yearOfAddiction, User user) {
-        this.name = name;
-        this.description = description;
-        this.severityLevel = severityLevel;
-        this.yearOfAddiction = yearOfAddiction;
-        this.user = user;
-    }
-
-    public Addiction(String name, String description, Severity severityLevel, Integer yearOfAddiction) {
-        this.name = name;
-        this.description = description;
-        this.severityLevel = severityLevel;
-        this.yearOfAddiction = yearOfAddiction;
-    }
 }

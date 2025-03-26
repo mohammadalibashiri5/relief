@@ -67,8 +67,7 @@ public class UserService {
     }
 
     public UserResponseDto getUserDetails(String username) throws ReliefApplicationException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ReliefApplicationException("User not found"));
+        User user = findByUsername(username);
         return userMapper.toResponseDto(user);
     }
 
@@ -84,30 +83,4 @@ public class UserService {
         }else throw new ReliefApplicationException("No such a user");
     }
 
-
-
-
-
-
-
-
-
-
-    /*
-    public void assignAddictionToUser(AddictionRequestDto dto) {
-        User user = userRepository.findById(dto.userId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        Addiction addiction = new Addiction(
-                dto.name(),
-                dto.description(),
-                dto.severityLevel(),
-                dto.yearOfAddiction()
-        );
-
-        user.addAddiction(addiction); // Link addiction to user
-        userRepository.save(user);   // Save changes
-    }
-
-     */
 }

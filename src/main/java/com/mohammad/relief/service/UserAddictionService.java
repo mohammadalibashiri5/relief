@@ -12,6 +12,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserAddictionService {
@@ -84,11 +88,14 @@ public class UserAddictionService {
     }
 
     @Transactional
-    public void deleteAddiction(String addictionName) throws ReliefApplicationException {
+    public void deleteAddiction(String username, String addictionName) throws ReliefApplicationException {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new ReliefApplicationException("User not found");
+        }
         // Find addiction by name
         Addiction addiction = addictionRepository.findByName(addictionName)
                 .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
-
         // Delete from the repository
         addictionRepository.delete(addiction);
     }
@@ -102,5 +109,13 @@ public class UserAddictionService {
                     newAddiction.setName(addictionName);
                     return addictionRepository.save(newAddiction); // Save before using it in CheckIn
                 });
+    }
+
+    public List<AddictionResponseDto> getAllAddictions(String username) throws ReliefApplicationException {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new ReliefApplicationException("User not found");
+        }
+        else return addictionRepository.findAll().stream().map(addictionMapper::toDto).collect(Collectors.toList());
     }
 }

@@ -53,6 +53,10 @@ public class TriggerService {
         return triggerMapper.toDto(savedTrigger);
     }
 
+    public Optional<Trigger> getByName(String triggerName) {
+        return triggerRepository.findByName(triggerName);
+    }
+
 //
 //    public TriggerResponseDTO updateTrigger(TriggerRequestDTO triggerRequestDTO, String username, String name) throws ReliefApplicationException {
 //        Visitor user = userRepository.findByUsername(username).orElseThrow(() -> new ReliefApplicationException("Visitor not found"));

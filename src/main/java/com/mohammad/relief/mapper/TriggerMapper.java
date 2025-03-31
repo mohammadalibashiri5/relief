@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface TriggerMapper {
+    @Mapping(target = "id", ignore = true)
     Trigger toEntity(TriggerRequestDTO triggerDto);
-    @Mapping(target = "userName", source = "user.name")
     @Mapping(target = "addictionName", source = "addiction.name")
     TriggerResponseDTO toDto(Trigger trigger);
 }

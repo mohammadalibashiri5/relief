@@ -1,5 +1,6 @@
 package com.mohammad.relief.controller;
 
+import com.mohammad.relief.data.dto.request.SolutionRequestDto;
 import com.mohammad.relief.data.dto.request.TriggerRequestDTO;
 import com.mohammad.relief.data.dto.response.TriggerResponseDTO;
 import com.mohammad.relief.exception.ReliefApplicationException;
@@ -33,24 +34,24 @@ public class TriggerController {
         // Return the response with HTTP status CREATED (201)
         return new ResponseEntity<>(triggerResponseDTO, HttpStatus.CREATED);
     }
-    @PutMapping("/update")
-    public ResponseEntity<TriggerResponseDTO> updateTrigger(
-            @RequestBody @Valid TriggerRequestDTO triggerRequestDTO,
-            Principal principal,
-            @RequestParam String triggerName) throws ReliefApplicationException {
-        String username = principal.getName();
-
-        TriggerResponseDTO triggerResponseDTO = triggerService.updateTrigger(triggerRequestDTO, username,triggerName);
-        return new ResponseEntity<>(triggerResponseDTO, HttpStatus.OK);
-    }
-    @GetMapping("/getAll")
-    public List<TriggerResponseDTO> getAllTrigger(Principal principal) throws ReliefApplicationException {
-        String username = principal.getName();
-        return triggerService.findAll(username);
-    }
-    @DeleteMapping("/delete")
-    public void deleteTrigger(@RequestParam String triggerName, Principal principal) throws ReliefApplicationException {
-        String username = principal.getName();
-        triggerService.deleteTrigger(triggerName, username);
-    }
+//    @PutMapping("/update")
+//    public ResponseEntity<TriggerResponseDTO> updateTrigger(
+//            @RequestBody @Valid TriggerRequestDTO triggerRequestDTO,
+//            Principal principal,
+//            @RequestParam String triggerName) throws ReliefApplicationException {
+//        String username = principal.getName();
+//
+//        TriggerResponseDTO triggerResponseDTO = triggerService.updateTrigger(triggerRequestDTO, username,triggerName);
+//        return new ResponseEntity<>(triggerResponseDTO, HttpStatus.OK);
+//    }
+//    @GetMapping("/getAll")
+//    public List<TriggerResponseDTO> getAllTrigger(Principal principal) throws ReliefApplicationException {
+//        String username = principal.getName();
+//        return triggerService.findAll(username);
+//    }
+//    @DeleteMapping("/delete")
+//    public void deleteTrigger(@RequestParam String triggerName, Principal principal) throws ReliefApplicationException {
+//        String username = principal.getName();
+//        triggerService.deleteTrigger(triggerName, username);
+//    }
 }

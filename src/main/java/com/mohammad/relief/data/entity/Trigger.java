@@ -5,23 +5,24 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Setter
 @Getter
 @RequiredArgsConstructor
 public class Trigger {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String triggerName;
+    private String name;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Visitor user;
     @ManyToOne
     @JoinColumn(name = "addiction_id")
     private Addiction addiction;
-    private String triggerType;
-    private String triggerDescription;
-    private String avoidanceStrategy;
-    private int repetitionCount = 0;  // Track how often this trigger causes relapse
+    private String description;
+    private int repetitionCount = 0;
 }

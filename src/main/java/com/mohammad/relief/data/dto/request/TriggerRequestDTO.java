@@ -5,6 +5,5 @@ public record TriggerRequestDTO(
         String triggerType,
         String triggerDescription,
         String avoidanceStrategy
-
 ) {
 }

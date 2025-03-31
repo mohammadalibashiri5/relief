@@ -17,5 +17,5 @@ public class Achievement {
     private String description;
     private String criteria;
     @ManyToOne()
-    private User user;
+    private Visitor user;
 }

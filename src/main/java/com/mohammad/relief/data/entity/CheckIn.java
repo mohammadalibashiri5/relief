@@ -17,8 +17,8 @@ public class CheckIn {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "visitor_id", nullable = false)
+    private Visitor user;
     @ManyToOne
     @JoinColumn(name = "addiction_id", nullable = false)
     private Addiction addiction;

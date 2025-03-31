@@ -23,7 +23,7 @@ public class Addiction {
     private Integer yearOfAddiction;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Visitor user;
     private String imageUrl;
 
 }

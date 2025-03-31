@@ -4,7 +4,7 @@ import com.mohammad.relief.data.dto.request.TriggerRequestDTO;
 import com.mohammad.relief.data.dto.response.TriggerResponseDTO;
 import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.Trigger;
-import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.TriggerMapper;
 import com.mohammad.relief.repository.TriggerRepository;
@@ -29,7 +29,7 @@ public class TriggerService {
 
     public TriggerResponseDTO addTrigger(TriggerRequestDTO triggerRequestDTO, String username, String addictionName) throws ReliefApplicationException {
 
-        User user = userService.findByUsername(username);
+        Visitor user = userService.findByUsername(username);
 
         Addiction addiction = addictionService.getAddictionByName(addictionName);
 
@@ -44,7 +44,7 @@ public class TriggerService {
     }
 
     public TriggerResponseDTO updateTrigger(TriggerRequestDTO triggerRequestDTO, String username, String name) throws ReliefApplicationException {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new ReliefApplicationException("User not found"));
+        Visitor user = userRepository.findByUsername(username).orElseThrow(() -> new ReliefApplicationException("Visitor not found"));
         Optional<Trigger> triggerName = triggerRepository.findByTriggerName(name);
         if (triggerName.isEmpty()) {
             throw new ReliefApplicationException("Trigger not found");
@@ -71,14 +71,14 @@ public class TriggerService {
     }
 
     public List<TriggerResponseDTO> findAll(String username) throws ReliefApplicationException {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<Visitor> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
-            throw new ReliefApplicationException("User not found");
+            throw new ReliefApplicationException("Visitor not found");
         }else return triggerRepository.findAll().stream().map(triggerMapper::toDto).collect(Collectors.toList());
     }
 
     public void deleteTrigger( String triggerName,String username) throws ReliefApplicationException {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<Visitor> user = userRepository.findByUsername(username);
         Optional<Trigger> name = triggerRepository.findByTriggerName(triggerName);
         if (name.isPresent() && name.get().getUser().getUsername().equals(user.get().getUsername())) {
             triggerRepository.delete(name.get());

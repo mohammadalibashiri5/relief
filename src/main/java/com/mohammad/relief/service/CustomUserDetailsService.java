@@ -1,7 +1,8 @@
 package com.mohammad.relief.service;
 
 
-import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.Visitor;
+import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,12 +23,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // Load user from the database
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<Visitor> userOptional = userRepository.findByEmail(email);
 
-        User user = userOptional.orElseThrow(() ->
-                new UsernameNotFoundException("User not found with username: " + email));
+        Visitor user = userOptional.orElseThrow(() ->
+                new UsernameNotFoundException("Visitor not found with username: " + email));
 
-        // Return a Spring Security User object
+        // Return a Spring Security Visitor object
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword()) // Hashed password

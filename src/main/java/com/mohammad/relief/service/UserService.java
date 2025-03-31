@@ -4,7 +4,8 @@ package com.mohammad.relief.service;
 import com.mohammad.relief.data.dto.response.ModifiedUserDto;
 import com.mohammad.relief.data.dto.request.UserRequestDto;
 import com.mohammad.relief.data.dto.response.UserResponseDto;
-import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.Visitor;
+import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.UserMapper;
 import com.mohammad.relief.repository.UserRepository;
@@ -33,20 +34,20 @@ public class UserService {
 
         if (!userRepository.existsByUsername(userRequestDto.username())) {
             String hashedPassed = passwordEncoder.encode(userRequestDto.password());
-            User user = userMapper.toEntity(userRequestDto);
+            Visitor user = userMapper.toEntity(userRequestDto);
             user.setRole("ROLE_USER");
             user.setPassword(hashedPassed);
-            User savedUser = userRepository.save(user);
+            Visitor savedUser = userRepository.save(user);
             return userMapper.toResponseDto(savedUser);
-        } else throw new ReliefApplicationException("User already exists");
+        } else throw new ReliefApplicationException("Visitor already exists");
     }
 
     public UserResponseDto updateUser(ModifiedUserDto userResponseDto, String username) throws ReliefApplicationException {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<Visitor> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
-            throw new ReliefApplicationException("User not found");
+            throw new ReliefApplicationException("Visitor not found");
         }
-        User foundUser = user.get();
+        Visitor foundUser = user.get();
 
         if (userResponseDto.name() != null && !foundUser.getName().equals(userResponseDto.name())) {
             foundUser.setName(userResponseDto.name());
@@ -67,17 +68,17 @@ public class UserService {
     }
 
     public UserResponseDto getUserDetails(String username) throws ReliefApplicationException {
-        User user = findByUsername(username);
+        Visitor user = findByUsername(username);
         return userMapper.toResponseDto(user);
     }
 
     public void deleteUser(String name) {
-        Optional<User> user = userRepository.findByUsername(name);
+        Optional<Visitor> user = userRepository.findByUsername(name);
         user.ifPresent(userRepository::delete);
     }
 
-    public User findByUsername(String username) throws ReliefApplicationException {
-        Optional<User> user = userRepository.findByUsername(username);
+    public Visitor findByUsername(String username) throws ReliefApplicationException {
+        Optional<Visitor> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
             return user.get();
         }else throw new ReliefApplicationException("No such a user");

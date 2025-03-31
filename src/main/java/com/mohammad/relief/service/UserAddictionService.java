@@ -3,7 +3,7 @@ package com.mohammad.relief.service;
 import com.mohammad.relief.data.dto.request.AddictionRequestDto;
 import com.mohammad.relief.data.dto.response.AddictionResponseDto;
 import com.mohammad.relief.data.entity.Addiction;
-import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.AddictionMapper;
 import com.mohammad.relief.repository.AddictionRepository;
@@ -27,7 +27,7 @@ public class UserAddictionService {
 
     public AddictionResponseDto assignAddictionToUser(AddictionRequestDto addictionDto, String username) throws ReliefApplicationException {
         // Retrieve user by username
-        User user = userService.findByUsername(username);
+        Visitor user = userService.findByUsername(username);
 
         // Check if addiction already exists for the user
         boolean addictionExists = user.getAddictions().stream()
@@ -61,7 +61,7 @@ public class UserAddictionService {
                                                       String username
     ) throws ReliefApplicationException {
 
-        User user = userService.findByUsername(username);
+        Visitor user = userService.findByUsername(username);
 
         // Find the addiction by name
         Addiction addiction = user.getAddictions().stream()
@@ -89,9 +89,9 @@ public class UserAddictionService {
 
     @Transactional
     public void deleteAddiction(String username, String addictionName) throws ReliefApplicationException {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<Visitor> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
-            throw new ReliefApplicationException("User not found");
+            throw new ReliefApplicationException("Visitor not found");
         }
         // Find addiction by name
         Addiction addiction = addictionRepository.findByName(addictionName)
@@ -112,9 +112,9 @@ public class UserAddictionService {
     }
 
     public List<AddictionResponseDto> getAllAddictions(String username) throws ReliefApplicationException {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<Visitor> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
-            throw new ReliefApplicationException("User not found");
+            throw new ReliefApplicationException("Visitor not found");
         }
         else return addictionRepository.findAll().stream().map(addictionMapper::toDto).collect(Collectors.toList());
     }

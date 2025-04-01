@@ -2,36 +2,27 @@ package com.mohammad.relief.data.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
 @Getter
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class Trigger {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String triggerName;
+    private String name;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Visitor user;
     @ManyToOne
     @JoinColumn(name = "addiction_id")
     private Addiction addiction;
-    private String triggerType;
-    private String triggerDescription;
-    private String avoidanceStrategy;
-    private int repetitionCount = 0;  // Track how often this trigger causes relapse
-
-
-    public Trigger(String triggerName, User user, Addiction addiction, String triggerType, String triggerDescription, String avoidanceStrategy) {
-        this.triggerName = triggerName;
-        this.user = user;
-        this.addiction = addiction;
-        this.triggerType = triggerType;
-        this.triggerDescription = triggerDescription;
-        this.avoidanceStrategy = avoidanceStrategy;
-    }
+    private String description;
+    private int repetitionCount = 0;
 }

@@ -4,6 +4,7 @@ import com.mohammad.relief.data.dto.response.CheckInResponseDto;
 import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.CheckIn;
 import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.service.CheckInService;
 import com.mohammad.relief.service.UserAddictionService;

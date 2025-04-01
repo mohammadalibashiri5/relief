@@ -3,7 +3,7 @@ package com.mohammad.relief.service;
 import com.mohammad.relief.data.dto.response.CheckInResponseDto;
 import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.CheckIn;
-import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.data.entity.enums.StreakLevel;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.CheckInMapper;
@@ -25,7 +25,7 @@ public class CheckInService {
 
     public CheckInResponseDto register(String username, String addictionName, boolean isClean) throws ReliefApplicationException {
 
-        User user = userService.findByUsername(username);
+        Visitor user = userService.findByUsername(username);
 
         Addiction addiction = addictionService.getAddictionByName(addictionName);
 
@@ -48,11 +48,11 @@ public class CheckInService {
         return StreakLevel.NONE;
     }
 
-    private boolean isUserCheckedInToday(User user, Addiction addiction) {
+    private boolean isUserCheckedInToday(Visitor user, Addiction addiction) {
         return checkInRepository.findByUserAndAddictionAndLastCheckinDate(user, addiction, LocalDate.now()).isPresent();
     }
 
-    private CheckIn getOrCreateCheckIn(User user, Addiction addiction) {
+    private CheckIn getOrCreateCheckIn(Visitor user, Addiction addiction) {
         return checkInRepository.findByUserAndAddiction(user, addiction)
                 .orElseGet(() -> {
                     CheckIn newCheckIn = new CheckIn();

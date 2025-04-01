@@ -9,11 +9,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface CheckInMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user.username", source = "userName") // Assuming 'username' exists in User
+    @Mapping(target = "user.username", source = "userName") // Assuming 'username' exists in Visitor
     @Mapping(target = "addiction.name", source = "addictionName")// We'll set addiction manually
     CheckIn toEntity(CheckInRequestDto checkInRequestDto);
 
-    @Mapping(target = "userName", source = "user.username") // Assuming 'username' exists in User
+    @Mapping(target = "userName", source = "user.username") // Assuming 'username' exists in Visitor
     @Mapping(target = "addictionName", source = "addiction.name")
     CheckInResponseDto toDto(CheckIn checkIn);
 }

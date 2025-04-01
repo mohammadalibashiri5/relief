@@ -1,12 +1,10 @@
 package com.mohammad.relief.data.dto.response;
 
+
 public record TriggerResponseDTO(
-        String triggerName,
-        String userName,
+        String name,
         String addictionName,
-        String triggerType,
-        String triggerDescription,
-        String avoidanceStrategy,
+        String description,
         int repetitionCount
 
 ) {

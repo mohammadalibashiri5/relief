@@ -3,7 +3,7 @@ package com.mohammad.relief.service;
 import com.mohammad.relief.data.dto.request.AddictionRequestDto;
 import com.mohammad.relief.data.dto.response.AddictionResponseDto;
 import com.mohammad.relief.data.entity.Addiction;
-import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.AddictionMapper;
 import com.mohammad.relief.repository.AddictionRepository;
@@ -11,6 +11,10 @@ import com.mohammad.relief.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +27,7 @@ public class UserAddictionService {
 
     public AddictionResponseDto assignAddictionToUser(AddictionRequestDto addictionDto, String username) throws ReliefApplicationException {
         // Retrieve user by username
-        User user = userService.findByUsername(username);
+        Visitor user = userService.findByUsername(username);
 
         // Check if addiction already exists for the user
         boolean addictionExists = user.getAddictions().stream()
@@ -57,7 +61,8 @@ public class UserAddictionService {
                                                       String username
     ) throws ReliefApplicationException {
 
-        User user = userService.findByUsername(username);
+
+        Visitor user = userService.findByUsername(username);
 
         // Find the addiction by name
         Addiction addiction = user.getAddictions().stream()
@@ -84,15 +89,17 @@ public class UserAddictionService {
     }
 
     @Transactional
-    public void deleteAddiction(String addictionName) throws ReliefApplicationException {
+    public void deleteAddiction(String username, String addictionName) throws ReliefApplicationException {
+        Optional<Visitor> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new ReliefApplicationException("Visitor not found");
+        }
         // Find addiction by name
         Addiction addiction = addictionRepository.findByName(addictionName)
                 .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
-
         // Delete from the repository
         addictionRepository.delete(addiction);
     }
-
 
     public Addiction getAddictionByName(String addictionName) {
         // Save before using it in CheckIn
@@ -102,5 +109,13 @@ public class UserAddictionService {
                     newAddiction.setName(addictionName);
                     return addictionRepository.save(newAddiction); // Save before using it in CheckIn
                 });
+    }
+
+    public List<AddictionResponseDto> getAllAddictions(String username) throws ReliefApplicationException {
+        Optional<Visitor> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new ReliefApplicationException("Visitor not found");
+        }
+        else return addictionRepository.findAll().stream().map(addictionMapper::toDto).collect(Collectors.toList());
     }
 }

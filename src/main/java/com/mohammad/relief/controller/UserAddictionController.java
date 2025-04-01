@@ -10,13 +10,23 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
+@CrossOrigin(value = "https://localhost:4200")
 public class UserAddictionController {
     private final UserAddictionService userAddictionService;
 
     public UserAddictionController(UserAddictionService userAddictionService) {
         this.userAddictionService = userAddictionService;
+    }
+
+    @GetMapping("/addictions")
+    @PreAuthorize("hasAuthority('USER')")
+    public List<AddictionResponseDto> getUserAddiction(Principal principal) throws ReliefApplicationException {
+        String username = principal.getName();
+        return userAddictionService.getAllAddictions(username);
+
     }
 
     @PostMapping("/add-addiction")
@@ -25,10 +35,8 @@ public class UserAddictionController {
             @RequestBody AddictionRequestDto addictionDto,
             Principal principal) throws ReliefApplicationException {
 
-        // Extract user email from token
         String username = principal.getName();
 
-        // Call service to assign addiction
         AddictionResponseDto addiction = userAddictionService.assignAddictionToUser(addictionDto, username);
 
         return ResponseEntity.ok(addiction);
@@ -60,7 +68,7 @@ public class UserAddictionController {
     public ResponseEntity<String> deleteAddiction(@PathVariable String name,
                                                   Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        userAddictionService.deleteAddiction(name);
+        userAddictionService.deleteAddiction(username, name);
         return ResponseEntity.ok("Addiction deleted from system.");
     }
 

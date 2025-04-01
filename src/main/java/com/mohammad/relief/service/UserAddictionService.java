@@ -61,6 +61,7 @@ public class UserAddictionService {
                                                       String username
     ) throws ReliefApplicationException {
 
+
         Visitor user = userService.findByUsername(username);
 
         // Find the addiction by name
@@ -99,7 +100,6 @@ public class UserAddictionService {
         // Delete from the repository
         addictionRepository.delete(addiction);
     }
-
 
     public Addiction getAddictionByName(String addictionName) {
         // Save before using it in CheckIn

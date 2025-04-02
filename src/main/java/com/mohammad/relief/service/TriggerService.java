@@ -8,11 +8,13 @@ import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.TriggerMapper;
 import com.mohammad.relief.repository.TriggerRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,22 +22,19 @@ public class TriggerService {
 
     private final TriggerMapper triggerMapper;
     private final TriggerRepository triggerRepository;
-    private final UserService userService;
     private final UserAddictionService addictionService;
+    private final UserService userService;
 
 
     public TriggerResponseDTO addTrigger(
             TriggerRequestDTO triggerRequestDTO,
-            String username,
-            String addictionName) throws ReliefApplicationException {
+            String addictionName)  {
 
         // Fetch user and addiction
-        Visitor user = userService.findByUsername(username);
         Addiction addiction = addictionService.getAddictionByName(addictionName);
 
         // Convert DTO to Entity
         Trigger trigger = triggerMapper.toEntity(triggerRequestDTO);
-        trigger.setUser(user);
         trigger.setAddiction(addiction);
 
         // Check if trigger already exists
@@ -85,12 +84,20 @@ public class TriggerService {
 //        return triggerMapper.toDto(savedTrigger);
 //    }
 //
-//    public List<TriggerResponseDTO> findAll(String username) throws ReliefApplicationException {
-//        Optional<Visitor> user = userRepository.findByUsername(username);
-//        if (user.isEmpty()) {
-//            throw new ReliefApplicationException("Visitor not found");
-//        }else return triggerRepository.findAll().stream().map(triggerMapper::toDto).collect(Collectors.toList());
-//    }
+   public List<TriggerResponseDTO> findAll(String username) throws ReliefApplicationException {
+       Visitor user = userService.findByUsername(username);
+       if (user == null) {
+           throw new ReliefApplicationException("Visitor not found");
+       }else {
+           List<TriggerResponseDTO> list = new ArrayList<>();
+
+           for (Trigger trigger : triggerRepository.findAll()) {
+               TriggerResponseDTO dto = triggerMapper.toDto(trigger);
+               list.add(dto);
+           }
+           return list;
+       }
+   }
 //
 //    public void deleteTrigger( String triggerName,String username) throws ReliefApplicationException {
 //        Optional<Visitor> user = userRepository.findByUsername(username);

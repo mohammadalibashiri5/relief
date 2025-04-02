@@ -3,9 +3,10 @@ package com.mohammad.relief.data.entity;
 import com.mohammad.relief.data.entity.enums.Severity;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @RequiredArgsConstructor
@@ -13,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class Addiction {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @Column(length = 1000)
@@ -24,6 +25,8 @@ public class Addiction {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Visitor user;
+    @OneToMany(mappedBy = "addiction", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Trigger> triggers;
     private String imageUrl;
 
 }

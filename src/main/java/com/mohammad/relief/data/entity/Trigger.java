@@ -14,15 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Trigger {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Visitor user;
-    @ManyToOne
     @JoinColumn(name = "addiction_id")
     private Addiction addiction;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "trigger", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Solution> solutions = new ArrayList<>();
     private String description;
     private int repetitionCount = 0;
 }

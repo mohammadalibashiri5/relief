@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,38 +51,38 @@ public class TriggerService {
         return triggerMapper.toDto(savedTrigger);
     }
 
-    public Optional<Trigger> getByName(String triggerName) {
-        return triggerRepository.findByName(triggerName);
+    public Optional<Trigger> getById(Long id) {
+        return triggerRepository.findById(id);
     }
 
-//
-//    public TriggerResponseDTO updateTrigger(TriggerRequestDTO triggerRequestDTO, String username, String name) throws ReliefApplicationException {
-//        Visitor user = userRepository.findByUsername(username).orElseThrow(() -> new ReliefApplicationException("Visitor not found"));
-//        Optional<Trigger> triggerName = triggerRepository.findByTriggerName(name);
-//        if (triggerName.isEmpty()) {
-//            throw new ReliefApplicationException("Trigger not found");
-//        }
-//        if (triggerRequestDTO == null) {
-//            throw new ReliefApplicationException("TriggerRequestDTO is null");
-//        }
-//        Trigger trigger = triggerName.get();
-//        trigger.setUser(user);
-//        if (triggerRequestDTO.triggerName() != null && !triggerRequestDTO.triggerName().equals(trigger.getTriggerName())) {
-//            trigger.setTriggerName(triggerRequestDTO.triggerName());
-//        }
-//        if (triggerRequestDTO.triggerType() != null && !triggerRequestDTO.triggerType().equals(trigger.getTriggerType())) {
-//            trigger.setTriggerType(triggerRequestDTO.triggerType());
-//        }
-//        if (triggerRequestDTO.triggerDescription() != null && !triggerRequestDTO.triggerDescription().equals(trigger.getTriggerDescription())) {
-//            trigger.setTriggerDescription(triggerRequestDTO.triggerDescription());
-//        }
-//        if (triggerRequestDTO.avoidanceStrategy() != null && !triggerRequestDTO.avoidanceStrategy().equals(trigger.getAvoidanceStrategy())) {
-//            trigger.setAvoidanceStrategy(triggerRequestDTO.avoidanceStrategy());
-//        }
-//        Trigger savedTrigger = triggerRepository.save(trigger);
-//        return triggerMapper.toDto(savedTrigger);
-//    }
-//
+
+    public TriggerResponseDTO updateTrigger(TriggerRequestDTO triggerRequestDTO, Long id) throws ReliefApplicationException {
+        Optional<Trigger> foundTrigger = triggerRepository.findById(id);
+        boolean isUpdated = false;
+        if (foundTrigger.isEmpty()) {
+            throw new ReliefApplicationException("Trigger not found");
+        }
+        if (triggerRequestDTO == null) {
+            throw new ReliefApplicationException("TriggerRequestDTO is null");
+        }
+        Trigger trigger = foundTrigger.get();
+
+        if (triggerRequestDTO.name() != null && !triggerRequestDTO.name().equals(trigger.getName())) {
+            trigger.setName(triggerRequestDTO.name());
+            isUpdated = true;
+        }
+        if (triggerRequestDTO.description() != null && !triggerRequestDTO.description().equals(trigger.getDescription())) {
+            trigger.setDescription(triggerRequestDTO.description());
+            isUpdated = true;
+        }
+        Trigger savedTrigger = new Trigger();
+        if (isUpdated) {
+            savedTrigger = triggerRepository.save(trigger);
+        }
+
+        return triggerMapper.toDto(savedTrigger);
+    }
+
    public List<TriggerResponseDTO> findAll(String username) throws ReliefApplicationException {
        Visitor user = userService.findByUsername(username);
        if (user == null) {

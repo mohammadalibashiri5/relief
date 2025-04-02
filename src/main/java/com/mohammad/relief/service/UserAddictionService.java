@@ -26,10 +26,9 @@ public class UserAddictionService {
 
 
     public AddictionResponseDto assignAddictionToUser(AddictionRequestDto addictionDto, String username) throws ReliefApplicationException {
-        // Retrieve user by username
-        Visitor user = userService.findByUsername(username);
+        Visitor user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ReliefApplicationException("No such a user"));
 
-        // Check if addiction already exists for the user
         boolean addictionExists = user.getAddictions().stream()
                 .anyMatch(a -> a.getName().equalsIgnoreCase(addictionDto.name()));
 
@@ -37,21 +36,13 @@ public class UserAddictionService {
             throw new ReliefApplicationException("Addiction already assigned to user");
         }
 
-        // Map DTO to entity
         Addiction addiction = addictionMapper.toEntity(addictionDto);
         addiction.setUser(user);  // Link addiction to user
         addiction.setYearOfAddiction(addictionDto.yearOfAddiction());
 
-        // Save the addiction
         addiction = addictionRepository.save(addiction);
 
-        // Convert to DTO and return
-        return new AddictionResponseDto(
-                addiction.getName(),
-                addiction.getDescription(),
-                addiction.getSeverityLevel(),
-                addiction.getYearOfAddiction()
-        );
+        return addictionMapper.toDto(addiction);
     }
 
 
@@ -63,6 +54,7 @@ public class UserAddictionService {
 
 
         Visitor user = userService.findByUsername(username);
+        boolean isAddictionUpdate = false;
 
         // Find the addiction by name
         Addiction addiction = user.getAddictions().stream()
@@ -70,19 +62,23 @@ public class UserAddictionService {
                 .findFirst()
                 .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
 
-        // Update only non-null fields
         if (addictionRequestDto.description() != null) {
             addiction.setDescription(addictionRequestDto.description());
+            isAddictionUpdate = true;
         }
         if (addictionRequestDto.yearOfAddiction() != null) {
             addiction.setYearOfAddiction(addictionRequestDto.yearOfAddiction());
+            isAddictionUpdate = true;
         }
         if (addictionRequestDto.severityLevel() != null) {
             addiction.setSeverityLevel(addictionRequestDto.severityLevel());
+            isAddictionUpdate = true;
         }
 
         // Save updated user with modified addiction list
-        userRepository.save(user);
+        if (isAddictionUpdate) {
+            userRepository.save(user);
+        }
 
         // Return updated addiction details
         return addictionMapper.toDto(addiction);

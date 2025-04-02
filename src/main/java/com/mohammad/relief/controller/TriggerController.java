@@ -1,6 +1,5 @@
 package com.mohammad.relief.controller;
 
-import com.mohammad.relief.data.dto.request.SolutionRequestDto;
 import com.mohammad.relief.data.dto.request.TriggerRequestDTO;
 import com.mohammad.relief.data.dto.response.TriggerResponseDTO;
 import com.mohammad.relief.data.entity.Trigger;
@@ -18,8 +17,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 @RestController
 @RequestMapping("/api/trigger")
 @RequiredArgsConstructor
@@ -32,13 +29,9 @@ public class TriggerController {
     @PostMapping("/add")
     public ResponseEntity<TriggerResponseDTO> addTrigger(
             @RequestBody @Valid TriggerRequestDTO triggerRequestDTO,
-            Principal principal,
             @RequestParam String addictionName) throws ReliefApplicationException {
-        String username = principal.getName();
-        // Call the service to handle the logic
-        TriggerResponseDTO triggerResponseDTO = triggerService.addTrigger(triggerRequestDTO, username, addictionName);
+        TriggerResponseDTO triggerResponseDTO = triggerService.addTrigger(triggerRequestDTO, addictionName);
 
-        // Return the response with HTTP status CREATED (201)
         return new ResponseEntity<>(triggerResponseDTO, HttpStatus.CREATED);
     }
     @PutMapping("/update/{triggerName}")
@@ -71,11 +64,11 @@ public class TriggerController {
 //        TriggerResponseDTO triggerResponseDTO = triggerService.updateTrigger(triggerRequestDTO, username,triggerName);
 //        return new ResponseEntity<>(triggerResponseDTO, HttpStatus.OK);
 //    }
-//    @GetMapping("/getAll")
-//    public List<TriggerResponseDTO> getAllTrigger(Principal principal) throws ReliefApplicationException {
-//        String username = principal.getName();
-//        return triggerService.findAll(username);
-//    }
+    @GetMapping("/getAll")
+    public List<TriggerResponseDTO> getAllTrigger(Principal principal) throws ReliefApplicationException {
+        String username = principal.getName();
+        return triggerService.findAll(username);
+    }
 //    @DeleteMapping("/delete")
 //    public void deleteTrigger(@RequestParam String triggerName, Principal principal) throws ReliefApplicationException {
 //        String username = principal.getName();

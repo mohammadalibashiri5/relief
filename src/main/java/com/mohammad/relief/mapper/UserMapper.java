@@ -3,7 +3,6 @@ package com.mohammad.relief.mapper;
 import com.mohammad.relief.data.dto.request.UserRequestDto;
 import com.mohammad.relief.data.dto.response.UserResponseDto;
 import com.mohammad.relief.data.entity.Visitor;
-import com.mohammad.relief.data.entity.Visitor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

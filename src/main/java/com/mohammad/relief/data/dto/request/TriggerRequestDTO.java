@@ -1,7 +1,5 @@
 package com.mohammad.relief.data.dto.request;
 
-import java.util.List;
-
 public record TriggerRequestDTO(
         String name,
         String description

@@ -8,4 +8,5 @@ import java.util.Optional;
 @Repository
 public interface TriggerRepository extends JpaRepository<Trigger, Integer> {
     Optional<Trigger> findByName(String triggerName);
+    Optional<Trigger> findById(Long id);
 }

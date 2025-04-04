@@ -9,6 +9,7 @@ import com.mohammad.relief.repository.TriggerRepository;
 import com.mohammad.relief.service.TriggerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class TriggerController {
 
 
     @PostMapping("/add")
+    @SneakyThrows(ReliefApplicationException.class)
     public ResponseEntity<TriggerResponseDTO> addTrigger(
             @RequestBody @Valid TriggerRequestDTO triggerRequestDTO,
             @RequestParam String addictionName) {
@@ -49,9 +51,9 @@ public class TriggerController {
         String username = principal.getName();
         return triggerService.findAll(username);
     }
-//    @DeleteMapping("/delete")
-//    public void deleteTrigger(@RequestParam String triggerName, Principal principal) throws ReliefApplicationException {
-//        String username = principal.getName();
-//        triggerService.deleteTrigger(triggerName, username);
-//    }
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteTrigger(@RequestParam String triggerName) throws ReliefApplicationException {
+        triggerService.deleteTrigger(triggerName);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

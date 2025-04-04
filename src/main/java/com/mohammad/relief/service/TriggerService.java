@@ -27,12 +27,17 @@ public class TriggerService {
 
     public TriggerResponseDTO addTrigger(
             TriggerRequestDTO triggerRequestDTO,
-            String addictionName)  {
+            String addictionName) throws ReliefApplicationException {
+        if (triggerRequestDTO == null) {
+            throw new ReliefApplicationException("Trigger is null");
+        }
 
-        // Fetch user and addiction
         Addiction addiction = addictionService.getAddictionByName(addictionName);
 
-        // Convert DTO to Entity
+        if (addiction == null) {
+            throw new ReliefApplicationException("Addiction not found");
+        }
+
         Trigger trigger = triggerMapper.toEntity(triggerRequestDTO);
         trigger.setAddiction(addiction);
 
@@ -97,12 +102,11 @@ public class TriggerService {
            return list;
        }
    }
-//
-//    public void deleteTrigger( String triggerName,String username) throws ReliefApplicationException {
-//        Optional<Visitor> user = userRepository.findByUsername(username);
-//        Optional<Trigger> name = triggerRepository.findByTriggerName(triggerName);
-//        if (name.isPresent() && name.get().getUser().getUsername().equals(user.get().getUsername())) {
-//            triggerRepository.delete(name.get());
-//        }else throw new ReliefApplicationException("Trigger could not be deleted");
-//    }
+
+   public void deleteTrigger( String triggerName) throws ReliefApplicationException {
+       Optional<Trigger> name = triggerRepository.findByName(triggerName);
+       if (name.isPresent()) {
+           triggerRepository.delete(name.get());
+       }else throw new ReliefApplicationException("Trigger could not be deleted");
+   }
 }

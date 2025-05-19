@@ -43,10 +43,10 @@ public class UserAddictionController {
     }
 
 
-    @PutMapping("/update/{addictionName}")
+    @PutMapping("/update/{addictionId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<?> updateAddiction(
-            @PathVariable String addictionName,
+            @PathVariable Long addictionId,
             @RequestBody AddictionRequestDto addictionRequestDto,
             Principal principal) {
         try {
@@ -55,7 +55,7 @@ public class UserAddictionController {
 
         // Call the addiction service to update the addiction for the user
         AddictionResponseDto updatedAddiction = userAddictionService.updateAddictionOfUser(
-                addictionRequestDto, addictionName, username);
+                addictionRequestDto, addictionId, username);
 
         return ResponseEntity.ok(updatedAddiction);
         }
@@ -65,11 +65,11 @@ public class UserAddictionController {
     }
 
     @DeleteMapping("/delete/{name}")
-    public ResponseEntity<String> deleteAddiction(@PathVariable String name,
+    public ResponseEntity<Void> deleteAddiction(@PathVariable String name,
                                                   Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
         userAddictionService.deleteAddiction(username, name);
-        return ResponseEntity.ok("Addiction deleted from system.");
+        return ResponseEntity.noContent().build();
     }
 
 

@@ -29,7 +29,7 @@ public class SolutionService {
         if (solutionRequestDto == null) {
             throw new ReliefApplicationException("The solution is not assigned");
         }
-        User user = userService.findByUsername(username);
+        User user = userService.findByEmail(username);
         Optional<Trigger> trigger = triggerRepository.findByName(triggerName);
         Solution solution;
         Solution savedSolution = new Solution();

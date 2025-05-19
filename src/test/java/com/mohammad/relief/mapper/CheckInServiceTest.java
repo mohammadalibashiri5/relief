@@ -48,7 +48,7 @@ class CheckInServiceTest {
 
     @Test
     void performCheckIn_userNotFound_throwsException() {
-        Mockito.when(userRepository.findByUsername("testuser"))
+        Mockito.when(userRepository.findByEmail("testuser"))
                 .thenReturn(Optional.empty());
 
         assertThrows(ReliefApplicationException.class,
@@ -58,7 +58,7 @@ class CheckInServiceTest {
     void performCheckIn_existingCheckIn_returnsExistingCheckIn() throws ReliefApplicationException {
         CheckIn existingCheckIn = new CheckIn(user, today, "completed");
 
-        Mockito.when(userRepository.findByUsername("testuser"))
+        Mockito.when(userRepository.findByEmail("testuser"))
                 .thenReturn(Optional.of(user));
         Mockito.when(checkInRepository.findByUserIdAndDate(user.getId(), today))
                 .thenReturn(Optional.of(existingCheckIn));
@@ -72,7 +72,7 @@ class CheckInServiceTest {
     void performCheckIn_missedCheckIn_updatesStatus() throws ReliefApplicationException {
         CheckIn yesterdayCheckIn = new CheckIn(user, yesterday, "pending");
 
-        Mockito.when(userRepository.findByUsername("testuser"))
+        Mockito.when(userRepository.findByEmail("testuser"))
                 .thenReturn(Optional.of(user));
         Mockito.when(checkInRepository.findByUserIdAndDate(user.getId(), today))
                 .thenReturn(Optional.empty());
@@ -88,7 +88,7 @@ class CheckInServiceTest {
     }
     @Test
     void performCheckIn_incrementStreak_success() throws ReliefApplicationException {
-        Mockito.when(userRepository.findByUsername("testuser"))
+        Mockito.when(userRepository.findByEmail("testuser"))
                 .thenReturn(Optional.of(user));
         Mockito.when(checkInRepository.findByUserIdAndDate(user.getId(), today))
                 .thenReturn(Optional.empty());
@@ -102,7 +102,7 @@ class CheckInServiceTest {
     }
     @Test
     void performCheckIn_resetStreak_success() throws ReliefApplicationException {
-        Mockito.when(userRepository.findByUsername("testuser"))
+        Mockito.when(userRepository.findByEmail("testuser"))
                 .thenReturn(Optional.of(user));
         Mockito.when(checkInRepository.findByUserIdAndDate(user.getId(), today))
                 .thenReturn(Optional.empty());
@@ -116,7 +116,7 @@ class CheckInServiceTest {
     }
     @Test
     void performCheckIn_success_createsNewCheckIn() throws ReliefApplicationException {
-        Mockito.when(userRepository.findByUsername("testuser"))
+        Mockito.when(userRepository.findByEmail("testuser"))
                 .thenReturn(Optional.of(user));
         Mockito.when(checkInRepository.findByUserIdAndDate(user.getId(), today))
                 .thenReturn(Optional.empty());

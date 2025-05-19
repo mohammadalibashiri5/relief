@@ -26,11 +26,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         Optional<Visitor> userOptional = userRepository.findByEmail(email);
 
         Visitor user = userOptional.orElseThrow(() ->
-                new UsernameNotFoundException("Visitor not found with username: " + email));
+                new UsernameNotFoundException("Visitor not found with email: " + email));
 
         // Return a Spring Security Visitor object
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
+                .username(user.getEmail())
                 .password(user.getPassword()) // Hashed password
                 .roles("USER") // You can add roles if applicable
                 .build();

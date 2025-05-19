@@ -67,7 +67,7 @@ class UserAddictionServiceTest {
         AddictionRequestDto addictionRequestDto = new AddictionRequestDto("test", "test", Severity.LOW, 2);
 
         // WHEN
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
@@ -89,10 +89,10 @@ class UserAddictionServiceTest {
         addiction.setName("test");
 
         // WHEN
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
         when(addictionMapper.toEntity(addictionRequestDto)).thenReturn(addiction);
         when(addictionRepository.save(any())).thenReturn(addiction);
-        when(addictionMapper.toDto(any())).thenReturn(new AddictionResponseDto("test", "test", Severity.LOW, 2));
+        when(addictionMapper.toDto(any())).thenReturn(new AddictionResponseDto(1L,"test", "test", Severity.LOW, 2));
 
         // THEN
         assertDoesNotThrow(() -> userAddictionService.assignAddictionToUser(addictionRequestDto, username));
@@ -101,6 +101,7 @@ class UserAddictionServiceTest {
     @Test
     void updateAddictionOfUserShouldSucceed() throws ReliefApplicationException {
         // GIVEN
+        Long id = 1L;
         String username = "testUser";
         String addictionName = "smoking";
         AddictionRequestDto addictionRequestDto = new AddictionRequestDto(addictionName,"Ugpdated Desc" , Severity.HIGH, 1);
@@ -108,17 +109,18 @@ class UserAddictionServiceTest {
         Visitor user = new Visitor();
         user.setUsername(username);
         Addiction addiction = new Addiction();
+        addiction.setId(1L);
         addiction.setName(addictionName);
         addiction.setDescription("Old Desc");
         addiction.setSeverityLevel(Severity.LOW);
         user.setAddictions(List.of(addiction));
 
         // WHEN
-        when(userService.findByUsername(username)).thenReturn(user);
-        when(addictionMapper.toDto(addiction)).thenReturn(new AddictionResponseDto(addictionName,"Updated Desc", Severity.HIGH, 1));
+        when(userService.findByEmail(username)).thenReturn(user);
+        when(addictionMapper.toDto(addiction)).thenReturn(new AddictionResponseDto(id, addictionName,"Updated Desc", Severity.HIGH, 1));
 
         // THEN
-        AddictionResponseDto response = userAddictionService.updateAddictionOfUser(addictionRequestDto, addictionName, username);
+        AddictionResponseDto response = userAddictionService.updateAddictionOfUser(addictionRequestDto, id, username);
 
         assertEquals("Updated Desc", response.description());
         assertEquals(Severity.HIGH, response.severityLevel());
@@ -128,11 +130,11 @@ class UserAddictionServiceTest {
     @Test
     void updateAddictionOfUserShouldFailIfUserNotFound() throws ReliefApplicationException {
         // GIVEN
-        when(userService.findByUsername(any())).thenThrow(new ReliefApplicationException("Visitor not found"));
+        when(userService.findByEmail(any())).thenThrow(new ReliefApplicationException("Visitor not found"));
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.updateAddictionOfUser(new AddictionRequestDto("test", "desc", Severity.LOW, 2020), "smoking", "unknownUser"));
+                () -> userAddictionService.updateAddictionOfUser(new AddictionRequestDto("test", "desc", Severity.LOW, 2020), 1L, "unknownUser"));
 
         assertEquals("Visitor not found", rae.getMessage());
     }
@@ -144,11 +146,11 @@ class UserAddictionServiceTest {
         user.setUsername("testUser");
         user.setAddictions(new ArrayList<>()); // No addictions
 
-        when(userService.findByUsername("testUser")).thenReturn(user);
+        when(userService.findByEmail("testUser")).thenReturn(user);
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.updateAddictionOfUser(new AddictionRequestDto("test", "desc", Severity.LOW, 2020), "smoking", "testUser"));
+                () -> userAddictionService.updateAddictionOfUser(new AddictionRequestDto("test", "desc", Severity.LOW, 2020), 1L, "testUser"));
 
         assertEquals("Addiction not found", rae.getMessage());
     }
@@ -163,7 +165,7 @@ class UserAddictionServiceTest {
         Addiction addiction = new Addiction();
         addiction.setName(addictionName);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
         when(addictionRepository.findByName(addictionName)).thenReturn(Optional.of(addiction));
 
         // WHEN
@@ -176,7 +178,7 @@ class UserAddictionServiceTest {
     @Test
     void deleteAddictionShouldFailIfUserNotFound() {
         // GIVEN
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
@@ -191,7 +193,7 @@ class UserAddictionServiceTest {
         Visitor user = new Visitor();
         user.setUsername("testUser");
 
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("testUser")).thenReturn(Optional.of(user));
         when(addictionRepository.findByName("smoking")).thenReturn(Optional.empty());
 
         // THEN
@@ -245,11 +247,11 @@ class UserAddictionServiceTest {
 
         List<Addiction> addictionList = List.of(addiction1, addiction2);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
         when(addictionRepository.findAll()).thenReturn(addictionList);
         when(addictionMapper.toDto(any())).thenAnswer(invocation -> {
             Addiction addiction = invocation.getArgument(0);
-            return new AddictionResponseDto(addiction.getName(), "desc", Severity.MEDIUM, 2020);
+            return new AddictionResponseDto(addiction.getId(), addiction.getName(), "desc", Severity.MEDIUM, 2020);
         });
 
         // WHEN
@@ -264,7 +266,7 @@ class UserAddictionServiceTest {
     @Test
     void getAllAddictionsShouldFailIfUserNotFound() {
         // GIVEN
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,

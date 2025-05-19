@@ -89,7 +89,7 @@ public class TriggerService {
     }
 
    public List<TriggerResponseDTO> findAll(String username) throws ReliefApplicationException {
-       Visitor user = userService.findByUsername(username);
+       Visitor user = userService.findByEmail(username);
        if (user == null) {
            throw new ReliefApplicationException("Visitor not found");
        }else {

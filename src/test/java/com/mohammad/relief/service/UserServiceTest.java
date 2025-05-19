@@ -71,7 +71,7 @@ class UserServiceTest {
         savedVisitor.setEmail("test@test.com");
         savedVisitor.setPassword("hashedPassword");
         savedVisitor.setRole("ROLE_USER");
-        UserResponseDto expectedResponse = new UserResponseDto("test", "test", "testing", "test@test.com", LocalDateTime.now(), LocalDate.of(2020, 1, 1), List.of(new AddictionResponseDto("name", "ffdf", Severity.LOW, 2)));
+        UserResponseDto expectedResponse = new UserResponseDto("test", "test", "testing", "test@test.com", LocalDateTime.now(), LocalDate.of(2020, 1, 1), List.of(new AddictionResponseDto(1L,"name", "ffdf", Severity.LOW, 2)));
 
         when(userRepository.existsByUsername("testing")).thenReturn(false);
         when(passwordEncoder.encode("password")).thenReturn("hashedPassword");
@@ -151,7 +151,7 @@ class UserServiceTest {
     void shouldThrowExceptionWhenUserNotFound() {
         // Arrange
         String username = "unknownUser";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(username)).thenReturn(Optional.empty());
 
         // Act & Assert
         ReliefApplicationException exception = assertThrows(ReliefApplicationException.class,
@@ -170,9 +170,9 @@ class UserServiceTest {
 
         ModifiedUserDto updateRequest = new ModifiedUserDto("newName", null, null, null);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
         when(userRepository.save(any(Visitor.class))).thenReturn(existingVisitor);
-        when(userMapper.toResponseDto(any(Visitor.class))).thenReturn(new UserResponseDto(username, "test", "testing", "test@test.com", LocalDateTime.now(), LocalDate.of(2020, 1, 1), List.of(new AddictionResponseDto("name", "ffdf", Severity.LOW, 2))));
+        when(userMapper.toResponseDto(any(Visitor.class))).thenReturn(new UserResponseDto(username, "test", "testing", "test@test.com", LocalDateTime.now(), LocalDate.of(2020, 1, 1), List.of(new AddictionResponseDto(1L,"name", "ffdf", Severity.LOW, 2))));
 
         // Act
         userService.updateUser(updateRequest, username);
@@ -193,7 +193,7 @@ class UserServiceTest {
 
         ModifiedUserDto updateRequest = new ModifiedUserDto(null, "newFamily", null, null);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
         when(userRepository.save(any(Visitor.class))).thenReturn(existingVisitor);
 
         // Act
@@ -215,7 +215,7 @@ class UserServiceTest {
 
         ModifiedUserDto updateRequest = new ModifiedUserDto(null, null, "newPassword", null);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
         when(userRepository.save(any(Visitor.class))).thenReturn(existingVisitor);
 
         // Act
@@ -238,7 +238,7 @@ class UserServiceTest {
         LocalDate newDateOfBirth = LocalDate.of(2000, 1, 1);
         ModifiedUserDto updateRequest = new ModifiedUserDto(null, null, null, newDateOfBirth);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
         when(userRepository.save(any(Visitor.class))).thenReturn(existingVisitor);
 
         // Act
@@ -265,7 +265,7 @@ class UserServiceTest {
 
         ModifiedUserDto updateRequest = new ModifiedUserDto("sameName", "sameFamily", "samePassword", LocalDate.of(1990, 1, 1));
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
 
         // Act
         userService.updateUser(updateRequest, username);
@@ -281,7 +281,7 @@ class UserServiceTest {
         Visitor visitor = new Visitor();
         visitor.setUsername(username);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(visitor));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(visitor));
 
         // Act
         userService.deleteUser(username);
@@ -300,9 +300,9 @@ class UserServiceTest {
         visitor.setName("John");
         visitor.setEmail("john@example.com");
 
-        UserResponseDto responseDto = new UserResponseDto("John", "Doe", "testUser", "john@example.com", LocalDateTime.now() ,LocalDate.of(1990, 1, 1),List.of(new AddictionResponseDto("","",Severity.LOW,3)));
+        UserResponseDto responseDto = new UserResponseDto("John", "Doe", "testUser", "john@example.com", LocalDateTime.now() ,LocalDate.of(1990, 1, 1),List.of(new AddictionResponseDto(1L,"","",Severity.LOW,3)));
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(visitor));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(visitor));
         when(userMapper.toResponseDto(visitor)).thenReturn(responseDto);
 
         // Act
@@ -312,7 +312,7 @@ class UserServiceTest {
         assertNotNull(result);
         assertEquals("John", result.name());
         assertEquals("testUser", result.username());
-        verify(userRepository).findByUsername(username);
+        verify(userRepository).findByEmail(username);
     }
 
     @Test
@@ -327,7 +327,7 @@ class UserServiceTest {
 
         ModifiedUserDto updateRequest = new ModifiedUserDto("NewName", "NewFamily", null, null);
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(visitor));
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(visitor));
 
         // Act
         userService.updateUser(updateRequest, username);

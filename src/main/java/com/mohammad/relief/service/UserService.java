@@ -27,7 +27,7 @@ public class UserService {
             throw new ReliefApplicationException("UserRequestDto is null");
         }
 
-        if (!userRepository.existsByUsername(userRequestDto.username())) {
+        if (!userRepository.existsByUsername(userRequestDto.email())) {
             String hashedPassed = passwordEncoder.encode(userRequestDto.password());
             Visitor user = userMapper.toEntity(userRequestDto);
             user.setRole("ROLE_USER");
@@ -37,8 +37,8 @@ public class UserService {
         } else throw new ReliefApplicationException("Visitor already exists");
     }
 
-    public UserResponseDto updateUser(ModifiedUserDto userResponseDto, String username) throws ReliefApplicationException {
-        Optional<Visitor> user = userRepository.findByUsername(username);
+    public UserResponseDto updateUser(ModifiedUserDto userResponseDto, String email) throws ReliefApplicationException {
+        Optional<Visitor> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
             throw new ReliefApplicationException("Visitor not found");
         }
@@ -70,18 +70,18 @@ public class UserService {
         return userMapper.toResponseDto(foundUser);
     }
 
-    public UserResponseDto getUserDetails(String username) throws ReliefApplicationException {
-        Visitor user = findByUsername(username);
+    public UserResponseDto getUserDetails(String email) throws ReliefApplicationException {
+        Visitor user = findByEmail(email);
         return userMapper.toResponseDto(user);
     }
 
     public void deleteUser(String name) {
-        Optional<Visitor> user = userRepository.findByUsername(name);
+        Optional<Visitor> user = userRepository.findByEmail(name);
         user.ifPresent(userRepository::delete);
     }
 
-    public Visitor findByUsername(String username) throws ReliefApplicationException {
-        Optional<Visitor> user = userRepository.findByUsername(username);
+    public Visitor findByEmail(String email) throws ReliefApplicationException {
+        Optional<Visitor> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
             return user.get();
         }else throw new ReliefApplicationException("No such a user");

@@ -25,7 +25,7 @@ public class CheckInService {
 
     public CheckInResponseDto register(String username, String addictionName, boolean isClean) throws ReliefApplicationException {
 
-        Visitor user = userService.findByUsername(username);
+        Visitor user = userService.findByEmail(username);
 
         Addiction addiction = addictionService.getAddictionByName(addictionName);
 

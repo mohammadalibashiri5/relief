@@ -119,4 +119,10 @@ public class UserAddictionService {
                 .map(addictionMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    public AddictionResponseDto getAddictionById(Long addictionId) throws ReliefApplicationException {
+        Addiction addiction = addictionRepository.findById(addictionId)
+                .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
+        return addictionMapper.toDto(addiction);
+    }
 }

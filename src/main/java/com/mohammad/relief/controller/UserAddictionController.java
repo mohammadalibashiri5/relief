@@ -28,6 +28,11 @@ public class UserAddictionController {
         return userAddictionService.getAllAddictions(username);
 
     }
+    @GetMapping("/addiction/{id}")
+    @PreAuthorize("hasAuthority('USER')")
+    public AddictionResponseDto getUserAddictionById(@PathVariable Long id) throws ReliefApplicationException {
+        return userAddictionService.getAddictionById(id);
+    }
 
     @PostMapping("/add-addiction")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")

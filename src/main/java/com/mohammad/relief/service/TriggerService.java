@@ -1,17 +1,17 @@
 package com.mohammad.relief.service;
 
 import com.mohammad.relief.data.dto.request.TriggerRequestDTO;
+import com.mohammad.relief.data.dto.response.AddictionResponseDto;
 import com.mohammad.relief.data.dto.response.TriggerResponseDTO;
 import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.Trigger;
-import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.TriggerMapper;
 import com.mohammad.relief.repository.TriggerRepository;
+import com.mohammad.relief.repository.UserAddictionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,17 +22,17 @@ public class TriggerService {
     private final TriggerMapper triggerMapper;
     private final TriggerRepository triggerRepository;
     private final UserAddictionService addictionService;
-    private final UserService userService;
+    private final UserAddictionRepository userAddictionRepository;
 
 
     public TriggerResponseDTO addTrigger(
             TriggerRequestDTO triggerRequestDTO,
-            String addictionName) throws ReliefApplicationException {
+            Long addictionId) throws ReliefApplicationException {
         if (triggerRequestDTO == null) {
             throw new ReliefApplicationException("Trigger is null");
         }
 
-        Addiction addiction = addictionService.getAddictionByName(addictionName);
+        Addiction addiction = userAddictionRepository.getAddictionById(addictionId);
 
         if (addiction == null) {
             throw new ReliefApplicationException("Addiction not found");
@@ -41,7 +41,7 @@ public class TriggerService {
         Trigger trigger = triggerMapper.toEntity(triggerRequestDTO);
         trigger.setAddiction(addiction);
 
-        // Check if trigger already exists
+
         Optional<Trigger> existingTrigger = triggerRepository.findByName(trigger.getName());
         if (existingTrigger.isPresent()) {
             Trigger existing = existingTrigger.get();
@@ -88,19 +88,12 @@ public class TriggerService {
         return triggerMapper.toDto(savedTrigger);
     }
 
-   public List<TriggerResponseDTO> findAll(String username) throws ReliefApplicationException {
-       Visitor user = userService.findByEmail(username);
-       if (user == null) {
-           throw new ReliefApplicationException("Visitor not found");
-       }else {
-           List<TriggerResponseDTO> list = new ArrayList<>();
-
-           for (Trigger trigger : triggerRepository.findAll()) {
-               TriggerResponseDTO dto = triggerMapper.toDto(trigger);
-               list.add(dto);
-           }
-           return list;
-       }
+   public List<TriggerResponseDTO> findAllByAddictionId(Long addictionId) {
+        Addiction addiction = userAddictionRepository.getAddictionById(addictionId);
+        return triggerRepository.findByAddiction(addiction)
+                .stream()
+                .map(triggerMapper::toDto)
+                .toList();
    }
 
    public void deleteTrigger( String triggerName) throws ReliefApplicationException {

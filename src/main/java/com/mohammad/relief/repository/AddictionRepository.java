@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface AddictionRepository extends JpaRepository<Addiction,Integer> {
     Optional<Addiction> findByName(String name);
     List<Addiction> findByUser(Visitor user);
+    Optional<Addiction> findById(Long id);
 }

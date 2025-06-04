@@ -1,35 +1,50 @@
 package com.mohammad.relief.service;
 
 import com.mohammad.relief.data.dto.request.UserRequestDto;
-import com.mohammad.relief.data.entity.User;
+import com.mohammad.relief.data.dto.response.AddictionResponseDto;
+import com.mohammad.relief.data.dto.response.ModifiedUserDto;
+import com.mohammad.relief.data.dto.response.UserResponseDto;
+
+import com.mohammad.relief.data.entity.Visitor;
+import com.mohammad.relief.data.entity.enums.Severity;
 import com.mohammad.relief.exception.ReliefApplicationException;
+import com.mohammad.relief.mapper.UserMapper;
 import com.mohammad.relief.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private UserMapper userMapper;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserService userService;
 
-    private User user;
-
     @Captor
-    ArgumentCaptor<User> captor;
+    ArgumentCaptor<Visitor> captor;
 
     @Test
     void createNullUser() {
@@ -37,136 +52,291 @@ class UserServiceTest {
         assertEquals("UserRequestDto is null", reliefException.getMessage());
     }
 
-//    @Test
-//    void creatClientMineur() {
-//        ClientDto clientDto = new ClientDto(1, "mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", new AdresseDto(1, "3", "dfdfd", "Nantes"), LocalDate.of(2010, 2, 2), LocalDate.now(), List.of(Permis.C));
-//        ApplicationException ue = assertThrows(ApplicationException.class, () -> userService.createClient(clientDto));
-//        assertEquals("Le Client Doit être Majeur", ue.getMessage());
-//    }
-//
-//    @Test
-//    void createClientMajeur() {
-//        ClientDto clientDto = new ClientDto(1, "mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", new AdresseDto(1, "3", "dfdfd", "Nantes"), LocalDate.of(2000, 2, 2), LocalDate.now(), List.of(Permis.C));
-//        Client client = userMapper.clientDtoToClient(clientDto);
-//        assertDoesNotThrow(() -> clientDao.save(client));
-//    }
-//
-//    @Test
-//    void createClientEmailAlreadyExist() {
-//        when(userRepository.save(any())).thenThrow(DataIntegrityViolationException.class);
-//        UserRequestDto userRequestDto = new UserRequestDto("Test", "TesTson", "testison", "test@test.com","Test12345@", LocalDate.of(2004,8,3));
-//        User user1 = new User( "testison", "test@test.com" ,"Test12345@", LocalDateTime.now(), LocalDateTime.now(), "USER", LocalDate.of(2004,8,3));
-//        ReliefApplicationException userException = assertThrows(ReliefApplicationException.class, () -> userService.registerUser(userRequestDto));
-//        assertEquals("Le Mail Existe Déjà", userException.getMessage());
-//    }
+    @Test
+    void readAUserWhoIsNotInDatabase() {
+        ReliefApplicationException userException = assertThrows(ReliefApplicationException.class, () -> userService.getUserDetails("dupont"));
+        assertEquals("No such a user", userException.getMessage());
+
+    }
+
+    @Test()
+    void shouldRegisterUserSuccessfullyWhenUsernameDoesNotExist() throws ReliefApplicationException {
+        UserRequestDto userRequestDto = new UserRequestDto("test", "test", "testing", "test@test.com", "password", LocalDate.of(2020, 1, 1));
+        Visitor mappedVisitor = new Visitor();
+        mappedVisitor.setUsername("testing");
+        mappedVisitor.setEmail("test@test.com");
+
+        Visitor savedVisitor = new Visitor();
+        savedVisitor.setUsername("testing");
+        savedVisitor.setEmail("test@test.com");
+        savedVisitor.setPassword("hashedPassword");
+        savedVisitor.setRole("ROLE_USER");
+        UserResponseDto expectedResponse = new UserResponseDto("test", "test", "testing", "test@test.com", LocalDateTime.now(), LocalDate.of(2020, 1, 1), List.of(new AddictionResponseDto(1L,"name", "ffdf", Severity.LOW, 2)));
+
+        when(userRepository.existsByUsername("testing")).thenReturn(false);
+        when(passwordEncoder.encode("password")).thenReturn("hashedPassword");
+        when(userMapper.toEntity(userRequestDto)).thenReturn(mappedVisitor);
+        when(userRepository.save(mappedVisitor)).thenReturn(savedVisitor);
+        when(userMapper.toResponseDto(savedVisitor)).thenReturn(expectedResponse);
+
+        // Act
+        UserResponseDto response = userService.registerUser(userRequestDto);
+
+        // Assert
+        assertEquals("testing", response.username());
+        assertEquals("test@test.com", response.email());
+    }
 
     @Test
-    void readAClientWhoIsNotInDatabase() {
+    void shouldThrowExceptionWhenUsernameAlreadyExists() {
 
-        ReliefApplicationException userException = assertThrows(ReliefApplicationException.class, () -> userService.getUserDetails("dupont"));
+        // Arrange
+        UserRequestDto userRequestDto = new UserRequestDto("John", "Doe", "johndoe", "john@example.com", "password123", LocalDate.of(1995, 5, 20));
 
-        assertEquals("User not found", userException.getMessage());
+        when(userRepository.existsByUsername("johndoe")).thenReturn(true);
 
-      }
-//
-//    @Test
-//    void readClientOk() {
-//        Client client = new Client("mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", new Adresse("64", "dfdfd", "Nantes"), LocalDate.of(2000, 2, 2), LocalDate.now(), List.of(Permis.C), true);
-//        Optional<Client> optClient = Optional.of(client);
-//        Mockito.when(clientDao.findByEmail("ldfldlfjl@gmail.com")).thenReturn(optClient);
-//        ClientDto clientDto = new ClientDto(1, "mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", new AdresseDto(1, "3", "dfdfd", "Nantes"), LocalDate.of(2010, 2, 2), LocalDate.now(), List.of(Permis.C));
-//        Mockito.when(userMapper.clientToClientDto(any())).thenReturn(clientDto);
-//        Optional<ClientDto> clientDtoOpt = userService.readClient("ldfldlfjl@gmail.com");
-//        assertTrue(clientDtoOpt.isPresent());
-//    }
-//
-//    @Test
-//    void deleteClientPasEnBase() {
-//        ClientDto clientDto = new ClientDto(1, "mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", new AdresseDto(1, "3", "dfdfd", "Nantes"), LocalDate.of(2000, 2, 2), LocalDate.now(), List.of(Permis.C));
-//        Mockito.when(clientDao.findByEmail(any())).thenReturn(Optional.empty());
-//        Exception ue = assertThrows(NoSuchElementException.class, () -> userService.deleteClient(clientDto.email()));
-//        assertEquals("No value present", ue.getMessage());
-//    }
-//
-//    @Test
-//    void deleteClientOK() {
-//        ClientDto clientDto = new ClientDto(1, "mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", new AdresseDto(1, "6", "dfdfd", "Nantes"), LocalDate.of(2000, 2, 2), LocalDate.now(), List.of(Permis.C));
-//        Client client = new Client("mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", new Adresse("A1", "dfdfd", "Nantes"), LocalDate.of(2000, 2, 2), LocalDate.now(), List.of(Permis.C), true);
-//        Mockito.when(clientDao.findByEmail(clientDto.email())).thenReturn(Optional.of(client));
-//        assertDoesNotThrow(() -> userService.deleteClient(clientDto.email()));
-//        Mockito.verify(clientDao, Mockito.times(1)).delete(captor.capture());
-//        assertNotNull(captor.getValue());
-//    }
-//
-//    @Test
-//    void updateClientPasEnbase() {
-//        ClientDto clientDto = new ClientDto(1, "mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", new AdresseDto(1, "3", "dfdfd", "Nantes"), LocalDate.of(2000, 2, 2), LocalDate.now(), List.of(Permis.C));
-//        Mockito.when(clientDao.findByEmail(any())).thenReturn(Optional.empty());
-//        ApplicationException ue = assertThrows(ApplicationException.class, () -> userService.updateClient(clientDto,clientDto.email()));
-//        assertEquals("Ce Client n'existe Pas", ue.getMessage());
-//    }
-//
-//    @Test
-//    void updateClientOK() {
-//        Adresse adresse = new Adresse("6", "44200", "Nantes");
-//        Adresse adresse2 = new Adresse("8", "5500", "Nantes");
-//        AdresseDto adresseDto1 = new AdresseDto(1,"6","44200","Nantes");
-//        Mockito.when(userMapper.adresseDtoToAdresse(adresseDto1)).thenReturn(adresse);
-//        ClientDto clientDto = new ClientDto(1, "mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", adresseDto1, LocalDate.of(2000, 2, 2), LocalDate.now(),List.of(Permis.A) );
-//        Client client = new Client("mimi", "momo", "ldfldlfjl@gmail", "fdfdfd", adresse2, LocalDate.of(2000, 2, 2), LocalDate.now(),List.of(Permis.A)  , true);
-//        Mockito.when((clientDao.findByEmail( ArgumentMatchers.anyString()))).thenReturn(Optional.of(client));
-//
-//        assertDoesNotThrow(() -> userService.updateClient(clientDto,clientDto.email()));
-//        Mockito.verify(clientDao).save(captor.capture());
-//
-//        assertEquals(0, captor.getValue().getId());
-//        assertEquals("mimi", captor.getValue().getNom());
-//        assertEquals("momo", captor.getValue().getPrenom());
-//        assertEquals("6", captor.getValue().getAdresse().getRue());
-//        assertEquals("44200", captor.getValue().getAdresse().getCodePostal());
-//        assertEquals("Nantes", captor.getValue().getAdresse().getVille());
-//        assertEquals(LocalDate.of(2000, 2, 2), captor.getValue().getDateDeNaissance());
-//        assertEquals(List.of(Permis.A), captor.getValue().getPermisList());
-//
-//    }
-//
-//    @Test
-//    void createAdminNull() {
-//        ApplicationException ue = assertThrows(ApplicationException.class, () -> userService.createAdmin(null));
-//        assertEquals("Admin null ne peut pas exister", ue.getMessage());
-//    }
-//    @Test
-//    void createAdminEmailExistante() {
-//        when(adminDao.save(any())).thenThrow(DataIntegrityViolationException.class);
-//        AdminDto adminDto = new AdminDto(1,"Bashiri","Mohammad","mohammadalibashiri@yahoo.com","password123@@@","Manager");
-//        Admin admin = new Admin ("Bashiri","Mohammad Ali","mohammadalibashiri@yahoo.com","password123@@@","Manager");
-//        Mockito.when(userMapper.admindtoToAdmin(adminDto)).thenReturn(admin);
-//        ApplicationException userException = assertThrows(ApplicationException.class, () -> userService.createAdmin(adminDto));
-//        assertEquals("Le Mail Existe Déjà", userException.getMessage());
-//    }
+        // Act & Assert
+        ReliefApplicationException exception = assertThrows(ReliefApplicationException.class,
+                () -> userService.registerUser(userRequestDto));
+
+        assertEquals("Visitor already exists", exception.getMessage());
+    }
+
+    @Test
+    void shouldEncodePasswordBeforeSaving() throws ReliefApplicationException {
+        // Arrange
+        UserRequestDto userRequestDto = new UserRequestDto("John", "Doe", "johndoe", "john@example.com", "password123", LocalDate.of(1995, 5, 20));
+        Visitor mappedVisitor = new Visitor();
+        mappedVisitor.setUsername("johndoe");
+        mappedVisitor.setEmail("john@example.com");
+
+        Visitor savedVisitor = new Visitor();
+        savedVisitor.setUsername("johndoe");
+        savedVisitor.setEmail("john@example.com");
+        savedVisitor.setPassword("hashedPassword");
+
+        when(userRepository.existsByUsername("johndoe")).thenReturn(false);
+        when(passwordEncoder.encode("password123")).thenReturn("hashedPassword");
+        when(userMapper.toEntity(userRequestDto)).thenReturn(mappedVisitor);
+        when(userRepository.save(mappedVisitor)).thenReturn(savedVisitor);
+
+        // Act
+        userService.registerUser(userRequestDto);
+
+
+        // Assert
+        verify(passwordEncoder).encode("password123");
+    }
+
+    @Test
+    void shouldMapUserRequestDtoToVisitor() throws ReliefApplicationException {
+        // Arrange
+        UserRequestDto userRequestDto = new UserRequestDto("John", "Doe", "johndoe", "john@example.com", "password123", LocalDate.of(1995, 5, 20));
+        Visitor mappedVisitor = new Visitor();
+        mappedVisitor.setUsername("johndoe");
+        mappedVisitor.setEmail("john@example.com");
+
+        when(userRepository.existsByUsername("johndoe")).thenReturn(false);
+        when(userMapper.toEntity(userRequestDto)).thenReturn(mappedVisitor);
+
+        // Act
+        userService.registerUser(userRequestDto);
+
+
+        // Assert
+        verify(userMapper).toEntity(userRequestDto);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotFound() {
+        // Arrange
+        String username = "unknownUser";
+        when(userRepository.findByEmail(username)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ReliefApplicationException exception = assertThrows(ReliefApplicationException.class,
+                () -> userService.updateUser(new ModifiedUserDto("newName", "newFamily", "newPass", LocalDate.of(2000, 1, 1)), username));
+
+        assertEquals("Visitor not found", exception.getMessage());
+    }
+
+    @Test
+    void shouldUpdateUserName() throws ReliefApplicationException {
+        // Arrange
+        String username = "existingUser";
+        Visitor existingVisitor = new Visitor();
+        existingVisitor.setUsername(username);
+        existingVisitor.setName("oldName");
+
+        ModifiedUserDto updateRequest = new ModifiedUserDto("newName", null, null, null);
+
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.save(any(Visitor.class))).thenReturn(existingVisitor);
+        when(userMapper.toResponseDto(any(Visitor.class))).thenReturn(new UserResponseDto(username, "test", "testing", "test@test.com", LocalDateTime.now(), LocalDate.of(2020, 1, 1), List.of(new AddictionResponseDto(1L,"name", "ffdf", Severity.LOW, 2))));
+
+        // Act
+        userService.updateUser(updateRequest, username);
+
+
+        // Assert
+        assertEquals("newName", existingVisitor.getName());
+        verify(userRepository).save(existingVisitor);
+    }
+
+    @Test
+    void shouldUpdateUserFamilyName() throws ReliefApplicationException {
+        // Arrange
+        String username = "existingUser";
+        Visitor existingVisitor = new Visitor();
+        existingVisitor.setUsername(username);
+        existingVisitor.setFamilyName("oldFamily");
+
+        ModifiedUserDto updateRequest = new ModifiedUserDto(null, "newFamily", null, null);
+
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.save(any(Visitor.class))).thenReturn(existingVisitor);
+
+        // Act
+        userService.updateUser(updateRequest, username);
+
+
+        // Assert
+        assertEquals("newFamily", existingVisitor.getFamilyName());
+        verify(userRepository).save(existingVisitor);
+    }
+
+    @Test
+    void shouldUpdateUserPassword() throws ReliefApplicationException {
+        // Arrange
+        String username = "existingUser";
+        Visitor existingVisitor = new Visitor();
+        existingVisitor.setUsername(username);
+        existingVisitor.setPassword("oldPassword");
+
+        ModifiedUserDto updateRequest = new ModifiedUserDto(null, null, "newPassword", null);
+
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.save(any(Visitor.class))).thenReturn(existingVisitor);
+
+        // Act
+        userService.updateUser(updateRequest, username);
+
+
+        // Assert
+        assertNotEquals("oldPassword", existingVisitor.getPassword()); // Should be hashed
+        verify(userRepository).save(existingVisitor);
+    }
+
+    @Test
+    void shouldUpdateUserDateOfBirth() throws ReliefApplicationException {
+        // Arrange
+        String username = "existingUser";
+        Visitor existingVisitor = new Visitor();
+        existingVisitor.setUsername(username);
+        existingVisitor.setDateOfBirth(LocalDate.of(1990, 1, 1));
+
+        LocalDate newDateOfBirth = LocalDate.of(2000, 1, 1);
+        ModifiedUserDto updateRequest = new ModifiedUserDto(null, null, null, newDateOfBirth);
+
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
+        when(userRepository.save(any(Visitor.class))).thenReturn(existingVisitor);
+
+        // Act
+        userService.updateUser(updateRequest, username);
+
+
+        // Assert
+        assertEquals(newDateOfBirth, existingVisitor.getDateOfBirth());
+        verify(userRepository).save(existingVisitor);
+    }
+
+    @Test
+    void shouldNotUpdateWhenNoFieldsAreChanged() throws ReliefApplicationException {
+        // Arrange
+        String username = "existingUser";
+        Visitor existingVisitor = new Visitor();
+        existingVisitor.setId(UUID.randomUUID());
+        existingVisitor.setUsername(username);
+        existingVisitor.setName("sameName");
+        existingVisitor.setEmail(any());
+        existingVisitor.setFamilyName("sameFamily");
+        existingVisitor.setPassword("samePassword");
+        existingVisitor.setDateOfBirth(LocalDate.of(1990, 1, 1));
+
+        ModifiedUserDto updateRequest = new ModifiedUserDto("sameName", "sameFamily", "samePassword", LocalDate.of(1990, 1, 1));
+
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(existingVisitor));
+
+        // Act
+        userService.updateUser(updateRequest, username);
+
+
+        // Assert
+        verify(userRepository, never()).save(any()); // No changes should trigger a save
+    }
+    @Test
+    void shouldDeleteUserIfExists() {
+        // Arrange
+        String username = "deletableUser";
+        Visitor visitor = new Visitor();
+        visitor.setUsername(username);
+
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(visitor));
+
+        // Act
+        userService.deleteUser(username);
+
+        // Assert
+        verify(userRepository).delete(captor.capture()); // Capturing the deleted user
+        assertEquals(username, captor.getValue().getUsername());
+    }
+
+    @Test
+    void shouldReturnUserDetailsWhenUserExists() throws ReliefApplicationException {
+        // Arrange
+        String username = "testUser";
+        Visitor visitor = new Visitor();
+        visitor.setUsername(username);
+        visitor.setName("John");
+        visitor.setEmail("john@example.com");
+
+        UserResponseDto responseDto = new UserResponseDto("John", "Doe", "testUser", "john@example.com", LocalDateTime.now() ,LocalDate.of(1990, 1, 1),List.of(new AddictionResponseDto(1L,"","",Severity.LOW,3)));
+
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(visitor));
+        when(userMapper.toResponseDto(visitor)).thenReturn(responseDto);
+
+        // Act
+        UserResponseDto result = userService.getUserDetails(username);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("John", result.name());
+        assertEquals("testUser", result.username());
+        verify(userRepository).findByEmail(username);
+    }
+
+    @Test
+    void shouldUpdateUserAndCaptureChanges() throws ReliefApplicationException {
+        // Arrange
+        String username = "existingUser";
+        Visitor visitor = new Visitor();
+        visitor.setUsername(username);
+        visitor.setName("OldName");
+        visitor.setEmail("old@example.com");
+        visitor.setFamilyName("OldFamily");
+
+        ModifiedUserDto updateRequest = new ModifiedUserDto("NewName", "NewFamily", null, null);
+
+        when(userRepository.findByEmail(username)).thenReturn(Optional.of(visitor));
+
+        // Act
+        userService.updateUser(updateRequest, username);
+
+        // Assert
+        verify(userRepository).save(captor.capture()); // Capturing the updated user
+
+        Visitor updatedUser = captor.getValue();
+        assertEquals("NewName", updatedUser.getName());
+        assertEquals("NewFamily", updatedUser.getFamilyName());
+    }
 }
-
-
-//    @Test
-//    void registerUser() {
-//        //GIVEN
-//        //WHEN
-//        //THEN
-//    }
-//
-//    @Test
-//    void updateUser() {
-//    }
-//
-//    @Test
-//    void getUserDetails() {
-//    }
-//
-//    @Test
-//    void deleteUser() {
-//    }
-//
-//    @Test
-//    void findByUsername() {
-//    }
-//}

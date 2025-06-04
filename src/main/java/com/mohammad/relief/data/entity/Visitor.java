@@ -1,6 +1,7 @@
 package com.mohammad.relief.data.entity;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -11,13 +12,12 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class Visitor extends User {
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Addiction> addictions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Trigger> triggers = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

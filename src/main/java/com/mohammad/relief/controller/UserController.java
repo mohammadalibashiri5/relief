@@ -45,8 +45,8 @@ public class UserController {
     @GetMapping("/getUser")
     @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserResponseDto> getUserDetails(Principal principal) throws ReliefApplicationException {
-        String username = principal.getName();
-        UserResponseDto user = userService.getUserDetails(username);
+        String email = principal.getName();
+        UserResponseDto user = userService.getUserDetails(email);
         return ResponseEntity.ok(user);
     }
 
@@ -56,7 +56,7 @@ public class UserController {
         ResponseEntity<Void> re;
         try {
             userService.deleteUser(principal.getName());
-            re = new ResponseEntity<>(HttpStatus.OK);
+            re = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }catch(Exception e){
             throw new ReliefApplicationException("Error "+e.getMessage());
         }

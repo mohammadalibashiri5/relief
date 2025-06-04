@@ -30,18 +30,18 @@ public class CheckInController {
 
     private final CheckInService checkInService;
 
-    @PostMapping("/register")
-    public ResponseEntity<CheckInResponseDto> checkIn(Principal principal,
-                                                      @RequestParam String addictionName,
-                                                      @RequestParam boolean isClean)
-            throws ReliefApplicationException {
-        String username = principal.getName();
-
-        // Call the service to process the streak
-        CheckInResponseDto updatedCheckIn = checkInService.register(username, addictionName, isClean);
-
-        return ResponseEntity.ok(updatedCheckIn);
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<CheckInResponseDto> checkIn(Principal principal,
+//                                                      @RequestParam String addictionName,
+//                                                      @RequestParam boolean isClean)
+//            throws ReliefApplicationException {
+//        String username = principal.getName();
+//
+//        // Call the service to process the streak
+//        //CheckInResponseDto updatedCheckIn = checkInService.register(username, addictionName, isClean);
+//
+//        //return ResponseEntity.ok(updatedCheckIn);
+//    }
 
 //    @Scheduled(cron = "0 0 0 * * ?") // Runs at midnight
 //    public void checkMissedCheckIns() {

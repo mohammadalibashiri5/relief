@@ -23,22 +23,22 @@ public class CheckInService {
     private final UserAddictionService addictionService;
     private final CheckInMapper checkInMapper;
 
-    public CheckInResponseDto register(String username, String addictionName, boolean isClean) throws ReliefApplicationException {
-
-        Visitor user = userService.findByEmail(username);
-
-        Addiction addiction = addictionService.getAddictionByName(addictionName);
-
-        if (isUserCheckedInToday(user, addiction)) {
-            throw new ReliefApplicationException("You have already checked in today.");
-        }
-
-        CheckIn checkIn = getOrCreateCheckIn(user, addiction);
-        updateCheckInStatus(checkIn, isClean);
-
-        CheckIn savedCheckIn = checkInRepository.save(checkIn);
-        return checkInMapper.toDto(savedCheckIn);
-    }
+//    public CheckInResponseDto register(String username, String addictionName, boolean isClean) throws ReliefApplicationException {
+//
+//        Visitor user = userService.findByEmail(username);
+//
+//        Addiction addiction = addictionService.getAddictionByName(addictionName);
+//
+//        if (isUserCheckedInToday(user, addiction)) {
+//            throw new ReliefApplicationException("You have already checked in today.");
+//        }
+//
+//        CheckIn checkIn = getOrCreateCheckIn(user, addiction);
+//        updateCheckInStatus(checkIn, isClean);
+//
+//        CheckIn savedCheckIn = checkInRepository.save(checkIn);
+//        return checkInMapper.toDto(savedCheckIn);
+//    }
 
     private StreakLevel getLevel(int streak) {
         if (streak >= 365) return StreakLevel.PLATINUM;

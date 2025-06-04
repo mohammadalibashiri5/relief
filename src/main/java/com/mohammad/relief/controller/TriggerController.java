@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -24,8 +25,10 @@ public class TriggerController {
     @SneakyThrows(ReliefApplicationException.class)
     public ResponseEntity<TriggerResponseDTO> addTrigger(
             @RequestBody @Valid TriggerRequestDTO triggerRequestDTO,
+            Principal principal,
             @RequestParam Long addictionId) {
-        TriggerResponseDTO triggerResponseDTO = triggerService.addTrigger(triggerRequestDTO, addictionId);
+        String username = principal.getName();
+        TriggerResponseDTO triggerResponseDTO = triggerService.addTrigger(triggerRequestDTO, username, addictionId);
 
         return new ResponseEntity<>(triggerResponseDTO, HttpStatus.CREATED);
     }
@@ -40,8 +43,9 @@ public class TriggerController {
     }
 
     @GetMapping("/getByAddiction/{addictionId}")
-    public List<TriggerResponseDTO> getAllTriggerByAddiction(@PathVariable Long addictionId) {
-        return triggerService.findAllByAddictionId(addictionId);
+    public List<TriggerResponseDTO> getAllTriggerByAddiction(@PathVariable Long addictionId, Principal principal) throws ReliefApplicationException {
+        String username = principal.getName();
+        return triggerService.getAllTriggersByAddiction(username, addictionId);
     }
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteTrigger(@RequestParam String triggerName) throws ReliefApplicationException {

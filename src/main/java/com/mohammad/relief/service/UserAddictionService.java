@@ -100,17 +100,17 @@ public class UserAddictionService {
         addictionRepository.delete(addiction);
     }
 
-    public Addiction getAddictionByName(String addictionName) {
-        // Save before using it in CheckIn
-        return addictionRepository.findByName(addictionName)
-                .orElseGet(() -> {
-                    Addiction newAddiction = new Addiction();
-                    newAddiction.setName(addictionName);
-                    return addictionRepository.save(newAddiction); // Save before using it in CheckIn
-                });
+    public AddictionResponseDto getAddictionByName(String username, String addictionName) throws ReliefApplicationException {
+        Optional<Visitor> OptionalUser = userRepository.findByEmail(username);
+        Visitor user = OptionalUser.orElseThrow(() -> new ReliefApplicationException("Visitor not found"));
+         Optional<Addiction> addiction = addictionRepository.findByUserAndName(user,addictionName);
+         if (addiction.isEmpty()) {
+             throw new ReliefApplicationException("Addiction not found");
+         } else return addictionMapper.toDto(addiction.get());
+
     }
 
-    public List<AddictionResponseDto> getAllAddictions(String username) throws ReliefApplicationException {
+    public List<AddictionResponseDto> getAllUserAddictions(String username) throws ReliefApplicationException {
         Visitor user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ReliefApplicationException("Visitor not found"));
 
@@ -120,9 +120,22 @@ public class UserAddictionService {
                 .collect(Collectors.toList());
     }
 
-    public AddictionResponseDto getAddictionById(Long addictionId) throws ReliefApplicationException {
-        Addiction addiction = addictionRepository.findById(addictionId)
+    public AddictionResponseDto getAddictionDtoByIdAndUser(Long addictionId, String username) throws ReliefApplicationException {
+
+        Visitor user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ReliefApplicationException("Visitor not found"));
+
+        Addiction addiction = addictionRepository.findByUserAndId(user, addictionId)
                 .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
         return addictionMapper.toDto(addiction);
+    }
+
+    public Addiction getAddictionByIdAndUser(Long addictionId, String username) throws ReliefApplicationException {
+
+        Visitor user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ReliefApplicationException("Visitor not found"));
+
+        return addictionRepository.findByUserAndId(user, addictionId)
+                .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
     }
 }

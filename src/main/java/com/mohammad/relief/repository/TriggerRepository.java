@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 @Repository
-public interface TriggerRepository extends JpaRepository<Trigger, Integer> {
+public interface TriggerRepository extends JpaRepository<Trigger, Long> {
     Optional<Trigger> findByName(String triggerName);
-    Optional<Trigger> findById(Long id);
     List<Trigger> findByAddiction(Addiction addiction);
 }

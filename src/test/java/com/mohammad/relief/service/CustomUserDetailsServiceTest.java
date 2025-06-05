@@ -25,7 +25,7 @@ class CustomUserDetailsServiceTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @Test
-    void shouldLoadUserByUsername_whenUserExists() {
+    void shouldLoadUserByEmail_whenUserExists() {
         // Arrange
         Visitor visitor = new Visitor();
         visitor.setUsername("john");
@@ -40,7 +40,7 @@ class CustomUserDetailsServiceTest {
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("john@example.com");
 
         // Assert
-        assertEquals("john", userDetails.getUsername());
+        assertEquals("john@example.com", userDetails.getUsername());
         assertEquals("hashed-password", userDetails.getPassword());
         assertTrue(userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_" + visitor.getRole())));

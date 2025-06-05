@@ -10,6 +10,7 @@ import com.mohammad.relief.repository.TriggerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class TriggerService {
 
         Trigger trigger = triggerMapper.toEntity(triggerRequestDTO);
         trigger.setAddiction(addiction);
+        trigger.setCreatedAt(LocalDateTime.now());
 
         if(!isTriggerExist(trigger.getName())) {
             trigger.setRepetitionCount(1);
@@ -96,7 +98,7 @@ public class TriggerService {
        }else throw new ReliefApplicationException("Trigger could not be deleted");
    }
 
-   private boolean isTriggerExist(String triggerName) {
+   boolean isTriggerExist(String triggerName) {
        Optional<Trigger> existingTrigger = triggerRepository.findByName(triggerName);
        boolean isPresent = false;
        if (existingTrigger.isPresent()) {

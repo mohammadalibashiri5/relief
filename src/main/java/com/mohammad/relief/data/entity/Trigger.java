@@ -25,5 +25,5 @@ public class Trigger {
     private List<Solution> solutions = new ArrayList<>();
     private String description;
     private int repetitionCount = 0;
-    private LocalDateTime startDate;
+    private LocalDateTime createdAt;
 }

@@ -5,7 +5,10 @@ import com.mohammad.relief.data.dto.request.UserRequestDto;
 import com.mohammad.relief.data.dto.response.UserResponseDto;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,23 +19,28 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.security.Principal;
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
+    @Operation(summary = "Register a new user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successfully created"),
+            @ApiResponse(responseCode = "403", description = "forbidden")
+    })
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) throws ReliefApplicationException {
         UserResponseDto userResponse = userService.registerUser(userRequestDto);
         return ResponseEntity.ok(userResponse);
     }
 
-
+    @Operation(summary = "update the authentified user's info")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated"),
+            @ApiResponse(responseCode = "403", description = "forbidden")
+    })
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<UserResponseDto> updateUser(
@@ -42,6 +50,12 @@ public class UserController {
         UserResponseDto updatedUser = userService.updateUser(userResponseDto, email);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @Operation(summary = "Get the user's info")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "403", description = "forbidden")
+    })
     @GetMapping("/getUser")
     @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserResponseDto> getUserDetails(Principal principal) throws ReliefApplicationException {
@@ -51,6 +65,11 @@ public class UserController {
     }
 
 
+    @Operation(summary = "delete the user's account")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Successfully deleted"),
+            @ApiResponse(responseCode = "403", description = "forbidden")
+    })
     @DeleteMapping("/deleteUser")
     ResponseEntity<Void> deleteUser(Principal principal) throws ReliefApplicationException {
         ResponseEntity<Void> re;
@@ -61,6 +80,17 @@ public class UserController {
             throw new ReliefApplicationException("Error "+e.getMessage());
         }
         return re;
+    }
+    @GetMapping("/check-username")
+    public ResponseEntity<Boolean> isUsernameAvailable(@RequestParam String username) {
+        boolean available = !userService.existsByUsername(username);
+        return ResponseEntity.ok(available);
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> isEmailAvailable(@RequestParam String email) {
+        boolean available = !userService.existsByEmail(email);
+        return ResponseEntity.ok(available);
     }
 
 

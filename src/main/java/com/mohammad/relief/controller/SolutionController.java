@@ -14,33 +14,30 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api/v1/solution")
+@RequestMapping("/api/v1/")
 @RequiredArgsConstructor
 public class SolutionController {
     private final SolutionService solutionService;
 
-    @PostMapping("/add")
+    @PostMapping("solution")
     public ResponseEntity<SolutionResponseDto> addSolution(@RequestBody @Valid SolutionRequestDto requestDto, Principal principal, @RequestParam String triggerName) throws ReliefApplicationException {
         String username = principal.getName();
         SolutionResponseDto addedSolution = solutionService.addSolution(requestDto, username, triggerName);
         return new ResponseEntity<>(addedSolution, HttpStatus.CREATED);
     }
-    @GetMapping("/getAll")
+    @GetMapping("solutions")
     public ResponseEntity<List<SolutionResponseDto>> getAllSolutions() {
         List<SolutionResponseDto> solutions = solutionService.getAllSolutions();
         return new ResponseEntity<>(solutions, HttpStatus.OK);
     }
-    @GetMapping("/get/{solutionName}")
-    @SneakyThrows(ReliefApplicationException.class)
-    public ResponseEntity<SolutionResponseDto> getSolution(@PathVariable String solutionName) {
+    @GetMapping("solution/{solutionName}")
+    public ResponseEntity<SolutionResponseDto> getSolution(@PathVariable String solutionName) throws ReliefApplicationException {
         SolutionResponseDto foundSolution = solutionService.getSolutionByName(solutionName);
         return new ResponseEntity<>(foundSolution, HttpStatus.OK);
     }
-    @DeleteMapping("/{solutionId}")
-    @SneakyThrows(ReliefApplicationException.class)
-    public ResponseEntity<Void> deleteSolution(@PathVariable Long solutionId) {
+    @DeleteMapping("solution/{solutionId}")
+    public ResponseEntity<Void> deleteSolution(@PathVariable Long solutionId) throws ReliefApplicationException {
         solutionService.deleteSolutionById(solutionId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

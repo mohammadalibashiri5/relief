@@ -35,7 +35,7 @@ public class UserService {
         if (!userRepository.existsByUsername(userRequestDto.username()) && !userRepository.existsByEmail(userRequestDto.email())) {
             String hashedPassed = passwordEncoder.encode(userRequestDto.password());
             Visitor user = userMapper.toEntity(userRequestDto);
-            user.setRole(Roles.ROLE_VISITOR);
+            user.setRole(String.valueOf(Roles.ROLE_VISITOR));
             user.setPassword(hashedPassed);
             Visitor savedUser = userRepository.save(user);
             return userMapper.toResponseDto(savedUser);

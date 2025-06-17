@@ -91,8 +91,8 @@ public class TriggerService {
         return triggerMapper.toDto(savedTrigger);
     }
 
-   public void deleteTrigger( String triggerName) throws ReliefApplicationException {
-       Optional<Trigger> name = triggerRepository.findByName(triggerName);
+   public void deleteTrigger( Long id) throws ReliefApplicationException {
+       Optional<Trigger> name = triggerRepository.findById(id);
        if (name.isPresent()) {
            triggerRepository.delete(name.get());
        }else throw new ReliefApplicationException("Trigger could not be deleted");

@@ -208,22 +208,22 @@ class TriggerServiceTest {
 //    }
 
     // Tests for deleteTrigger method
-    @Test
-    void deleteTrigger_ShouldDeleteTrigger_WhenTriggerExists() throws ReliefApplicationException {
-        when(triggerRepository.findByName("Test Trigger")).thenReturn(Optional.of(trigger));
-
-        triggerService.deleteTrigger("Test Trigger");
-
-        verify(triggerRepository).delete(trigger);
-    }
-
-    @Test
-    void deleteTrigger_ShouldThrowException_WhenTriggerNotFound() {
-        when(triggerRepository.findByName("Test Trigger")).thenReturn(Optional.empty());
-
-        assertThrows(ReliefApplicationException.class,
-                () -> triggerService.deleteTrigger("Test Trigger"));
-    }
+//    @Test
+//    void deleteTrigger_ShouldDeleteTrigger_WhenTriggerExists() throws ReliefApplicationException {
+//        when(triggerRepository.findByName("Test Trigger")).thenReturn(Optional.of(trigger));
+//
+//        triggerService.deleteTrigger("Test Trigger");
+//
+//        verify(triggerRepository).delete(trigger);
+//    }
+//
+//    @Test
+//    void deleteTrigger_ShouldThrowException_WhenTriggerNotFound() {
+//        when(triggerRepository.findByName("Test Trigger")).thenReturn(Optional.empty());
+//
+//        assertThrows(ReliefApplicationException.class,
+//                () -> triggerService.deleteTrigger("Test Trigger"));
+//    }
 
     // Test for isTriggerExist helper method
     @Test

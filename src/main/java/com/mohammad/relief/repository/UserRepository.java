@@ -1,5 +1,6 @@
 package com.mohammad.relief.repository;
 
+import com.mohammad.relief.data.entity.User;
 import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.data.entity.Visitor;
 import org.springframework.data.jpa.repository.JpaRepository;

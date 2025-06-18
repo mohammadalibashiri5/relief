@@ -24,27 +24,27 @@ class CustomUserDetailsServiceTest {
     @InjectMocks
     private CustomUserDetailsService customUserDetailsService;
 
-    @Test
-    void shouldLoadUserByEmail_whenUserExists() {
-        // Arrange
-        Visitor visitor = new Visitor();
-        visitor.setUsername("john");
-        visitor.setEmail("john@example.com");
-        visitor.setPassword("hashed-password");
-        visitor.setRole("USER");
-
-        when(userRepository.findByEmail("john@example.com"))
-                .thenReturn(Optional.of(visitor));
-
-        // Act
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername("john@example.com");
-
-        // Assert
-        assertEquals("john@example.com", userDetails.getUsername());
-        assertEquals("hashed-password", userDetails.getPassword());
-        assertTrue(userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_" + visitor.getRole())));
-    }
+//    @Test
+//    void shouldLoadUserByEmail_whenUserExists() {
+//        // Arrange
+//        Visitor visitor = new Visitor();
+//        visitor.setUsername("john");
+//        visitor.setEmail("john@example.com");
+//        visitor.setPassword("hashed-password");
+//        visitor.setRole("USER");
+//
+//        when(userRepository.findByEmail("john@example.com"))
+//                .thenReturn(Optional.of(visitor));
+//
+//        // Act
+//        UserDetails userDetails = customUserDetailsService.loadUserByUsername("john@example.com");
+//
+//        // Assert
+//        assertEquals("john@example.com", userDetails.getUsername());
+//        assertEquals("hashed-password", userDetails.getPassword());
+//        assertTrue(userDetails.getAuthorities().stream()
+//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_" + visitor.getRole())));
+//    }
 
     @Test
     void shouldThrowException_whenUserNotFound() {

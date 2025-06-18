@@ -9,5 +9,5 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class Admin extends Visitor {
+public class Admin extends User {
 }

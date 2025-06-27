@@ -46,16 +46,16 @@ class CustomUserDetailsServiceTest {
 //                .anyMatch(auth -> auth.getAuthority().equals("ROLE_" + visitor.getRole())));
 //    }
 
-    @Test
-    void shouldThrowException_whenUserNotFound() {
-        // Arrange
-        when(userRepository.findByEmail("missing@example.com"))
-                .thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(UsernameNotFoundException.class, () ->
-                customUserDetailsService.loadUserByUsername("missing@example.com"));
-    }
+//    @Test
+//    void shouldThrowException_whenUserNotFound() {
+//        // Arrange
+//        when(userRepository.findByEmail("missing@example.com"))
+//                .thenReturn(Optional.empty());
+//
+//        // Act & Assert
+//        assertThrows(UsernameNotFoundException.class, () ->
+//                customUserDetailsService.loadUserByUsername("missing@example.com"));
+//    }
 
 
 

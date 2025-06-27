@@ -105,5 +105,11 @@ public class UserService {
             return userMapper.toAdminResponseDto(savedUser);
         } else throw new ReliefApplicationException("This Admin already exists");
     }
+    public Admin findAdminByEmail(String email) throws ReliefApplicationException {
+        Optional<Admin> admin = adminRepository.findByEmail(email);
+        if (admin.isPresent()) {
+            return admin.get();
+        }else throw new ReliefApplicationException("No such an Admin");
+    }
 
 }

@@ -29,9 +29,7 @@ public class SecurityConfig implements WebMvcConfigurer {
             "/api/v1/auth/**", "/v2/api-docs", "/v3/api-docs",
             "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**",
             "/configuration/ui", "/configuration/security", "/swagger-ui/**",
-            "/webjars/**", "/swagger-ui.html", "/api/auth/**", "/api/test/**",
-            "/authenticate", "/api/users/register", "/auth/login"
-    };
+            "/api/v1/articles", "/webjars/**", "/swagger-ui.html", "/api/auth/**", "/api/test/**", "/api/users/register", "/auth/login"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {

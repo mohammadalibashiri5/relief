@@ -5,7 +5,6 @@ import com.mohammad.relief.data.dto.request.UserRequestDto;
 import com.mohammad.relief.data.dto.response.UserResponseDto;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.service.UserService;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +42,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
     @GetMapping("/getUser")
-    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('VISITOR', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<UserResponseDto> getUserDetails(Principal principal) throws ReliefApplicationException {
         String email = principal.getName();
         UserResponseDto user = userService.getUserDetails(email);

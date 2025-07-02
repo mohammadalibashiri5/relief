@@ -158,18 +158,18 @@ class UserAddictionServiceTest {
     void deleteAddictionShouldSucceed() throws ReliefApplicationException {
         // GIVEN
         String username = "testUser";
-        String addictionName = "smoking";
+        Long addictionId = 1L;
         Visitor user = new Visitor();
         user.setUsername(username);
 
         Addiction addiction = new Addiction();
-        addiction.setName(addictionName);
+        addiction.setId(addictionId);
 
         when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
-        when(addictionRepository.findByName(addictionName)).thenReturn(Optional.of(addiction));
+        when(addictionRepository.findById(addictionId)).thenReturn(Optional.of(addiction));
 
         // WHEN
-        userAddictionService.deleteAddiction(username, addictionName);
+        userAddictionService.deleteAddiction(username, addictionId);
 
         // THEN
         verify(addictionRepository, times(1)).delete(addiction);
@@ -182,7 +182,7 @@ class UserAddictionServiceTest {
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.deleteAddiction("unknownUser", "smoking"));
+                () -> userAddictionService.deleteAddiction("unknownUser", 1L));
 
         assertEquals("Visitor not found", rae.getMessage());
     }
@@ -194,11 +194,11 @@ class UserAddictionServiceTest {
         user.setUsername("testUser");
 
         when(userRepository.findByEmail("testUser")).thenReturn(Optional.of(user));
-        when(addictionRepository.findByName("smoking")).thenReturn(Optional.empty());
+        when(addictionRepository.findById(1L)).thenReturn(Optional.empty());
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.deleteAddiction("testUser", "smoking"));
+                () -> userAddictionService.deleteAddiction("testUser", 1L));
 
         assertEquals("Addiction not found", rae.getMessage());
     }

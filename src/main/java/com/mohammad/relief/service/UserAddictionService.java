@@ -89,13 +89,10 @@ public class UserAddictionService {
     }
 
     @Transactional
-    public void deleteAddiction(String username, String addictionName) throws ReliefApplicationException {
+    public void deleteAddiction(String username, Long addictionId) throws ReliefApplicationException {
         Optional<Visitor> user = userRepository.findByEmail(username);
-        if (user.isEmpty()) {
-            throw new ReliefApplicationException("Visitor not found");
-        }
         // Find addiction by name
-        Addiction addiction = addictionRepository.findByName(addictionName)
+        Addiction addiction = addictionRepository.findByUserAndId(user,addictionId)
                 .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
         addictionRepository.delete(addiction);
     }
@@ -122,9 +119,11 @@ public class UserAddictionService {
 
     public AddictionResponseDto getAddictionDtoByIdAndUser(Long addictionId, String username) throws ReliefApplicationException {
 
-        Visitor user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ReliefApplicationException("Visitor not found"));
+        Optional<Visitor> user = userRepository.findByEmail(username);
 
+        if (user.isEmpty()) {
+            throw new ReliefApplicationException("User not found");
+        }
         Addiction addiction = addictionRepository.findByUserAndId(user, addictionId)
                 .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));
         return addictionMapper.toDto(addiction);
@@ -132,8 +131,7 @@ public class UserAddictionService {
 
     public Addiction getAddictionByIdAndUser(Long addictionId, String username) throws ReliefApplicationException {
 
-        Visitor user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ReliefApplicationException("Visitor not found"));
+        Optional<Visitor> user = userRepository.findByEmail(username);
 
         return addictionRepository.findByUserAndId(user, addictionId)
                 .orElseThrow(() -> new ReliefApplicationException("Addiction not found"));

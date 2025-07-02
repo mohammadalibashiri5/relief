@@ -14,7 +14,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@CrossOrigin(value = "https://localhost:4200")
+@RequestMapping("/api/v1/user/")
 @RequiredArgsConstructor
 public class UserAddictionController {
 
@@ -42,7 +42,7 @@ public class UserAddictionController {
         return userAddictionService.getAddictionDtoByIdAndUser(id, username);
     }
 
-    @PostMapping("/add-addiction")
+    @PostMapping("/addictions")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<AddictionResponseDto> assignAddictionToUser(
             @RequestBody AddictionRequestDto addictionDto,
@@ -72,11 +72,11 @@ public class UserAddictionController {
         }
     }
 
-    @DeleteMapping("/delete/{name}")
-    public ResponseEntity<Void> deleteAddiction(@PathVariable String name,
+    @DeleteMapping("/addictions/{id}")
+    public ResponseEntity<Void> deleteAddiction(@PathVariable Long id,
                                                 Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        userAddictionService.deleteAddiction(username, name);
+        userAddictionService.deleteAddiction(username, id);
         return ResponseEntity.noContent().build();
     }
 

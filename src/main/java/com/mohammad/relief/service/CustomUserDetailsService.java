@@ -5,6 +5,7 @@ import com.mohammad.relief.data.entity.Admin;
 import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.repository.AdminRepository;
 import com.mohammad.relief.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,15 +14,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
-
-    public CustomUserDetailsService(UserRepository userRepository, AdminRepository adminRepository) {
-        this.userRepository = userRepository;
-        this.adminRepository = adminRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -35,6 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .build();
         }
 
+        // Load user from the database
         Optional<Visitor> visitorOptional = userRepository.findByEmail(email);
         if (visitorOptional.isPresent()) {
             Visitor visitor = visitorOptional.get();

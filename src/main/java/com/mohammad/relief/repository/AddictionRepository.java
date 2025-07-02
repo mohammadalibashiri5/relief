@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AddictionRepository extends JpaRepository<Addiction,Integer> {
+public interface AddictionRepository extends JpaRepository<Addiction,Long> {
     Optional<Addiction> findByName(String name);
     List<Addiction> findByUser(Visitor user);
-    Optional<Addiction> findByUserAndId(Visitor user, Long id);
+    Optional<Addiction> findByUserAndId(Optional<Visitor> user, Long id);
     Optional<Addiction> findByUserAndName(Visitor user, String name);
 }

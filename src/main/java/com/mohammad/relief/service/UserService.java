@@ -75,8 +75,17 @@ public class UserService {
     }
 
     public UserResponseDto getUserDetails(String email) throws ReliefApplicationException {
-        Visitor user = findByEmail(email);
-        return userMapper.toResponseDto(user);
+        Optional<Admin> adminOpt = adminRepository.findByEmail(email);
+        if (adminOpt.isPresent()) {
+            return userMapper.toAdminResponseDto(adminOpt.get());
+        }
+
+        Optional<Visitor> visitorOpt = userRepository.findByEmail(email);
+        if (visitorOpt.isPresent()) {
+            return userMapper.toResponseDto(visitorOpt.get());
+        }
+
+        throw new ReliefApplicationException("No user found with email: " + email);
     }
 
     public void deleteUser(String name) {
@@ -111,5 +120,11 @@ public class UserService {
             return admin.get();
         }else throw new ReliefApplicationException("No such an Admin");
     }
+    public UserResponseDto getAdminDetails(String email) throws ReliefApplicationException {
+        Admin admin = findAdminByEmail(email);
+        return userMapper.toAdminResponseDto(admin);
+    }
+
+
 
 }

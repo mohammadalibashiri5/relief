@@ -8,10 +8,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +24,14 @@ public class AdminController {
         UserResponseDto userResponse = userService.registerAdmin(userRequestDto);
         return ResponseEntity.ok(userResponse);
     }
+    @GetMapping("/getUser")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<UserResponseDto> getUserDetails(Principal principal) throws ReliefApplicationException {
+        String email = principal.getName();
+        UserResponseDto admin = userService.getAdminDetails(email);
+        return ResponseEntity.ok(admin);
+    }
+
+
 
 }

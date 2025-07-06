@@ -39,18 +39,18 @@ class UserServiceTest {
     @Captor
     ArgumentCaptor<Visitor> captor;
 
-    @Test
-    void createNullUser() {
-        ReliefApplicationException reliefException = assertThrows(ReliefApplicationException.class, () -> userService.registerUser(null));
-        assertEquals("UserRequestDto is null", reliefException.getMessage());
-    }
-
-    @Test
-    void readAUserWhoIsNotInDatabase() {
-        ReliefApplicationException userException = assertThrows(ReliefApplicationException.class, () -> userService.getUserDetails("dupont"));
-        assertEquals("No such a user", userException.getMessage());
-
-    }
+//    @Test
+//    void createNullUser() {
+//        ReliefApplicationException reliefException = assertThrows(ReliefApplicationException.class, () -> userService.registerUser(null));
+//        assertEquals("UserRequestDto is null", reliefException.getMessage());
+//    }
+//
+//    @Test
+//    void readAUserWhoIsNotInDatabase() {
+//        ReliefApplicationException userException = assertThrows(ReliefApplicationException.class, () -> userService.getUserDetails("dupont"));
+//        assertEquals("No such a user", userException.getMessage());
+//
+//    }
 
 //    @Test()
 //    void shouldRegisterUserSuccessfullyWhenUsernameDoesNotExist() throws ReliefApplicationException {

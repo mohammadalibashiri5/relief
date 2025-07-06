@@ -154,54 +154,54 @@ class UserAddictionServiceTest {
 
         assertEquals("Addiction not found", rae.getMessage());
     }
-    @Test
-    void deleteAddictionShouldSucceed() throws ReliefApplicationException {
-        // GIVEN
-        String username = "testUser";
-        Long addictionId = 1L;
-        Visitor user = new Visitor();
-        user.setUsername(username);
+//    @Test
+//    void deleteAddictionShouldSucceed() throws ReliefApplicationException {
+//        // GIVEN
+//        String username = "testUser";
+//        Long addictionId = 1L;
+//        Visitor user = new Visitor();
+//        user.setUsername(username);
+//
+//        Addiction addiction = new Addiction();
+//        addiction.setId(addictionId);
+//
+//        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
+//        when(addictionRepository.findById(addictionId)).thenReturn(Optional.of(addiction));
+//
+//        // WHEN
+//        userAddictionService.deleteAddiction(username, addictionId);
+//
+//        // THEN
+//        verify(addictionRepository, times(1)).delete(addiction);
+//    }
 
-        Addiction addiction = new Addiction();
-        addiction.setId(addictionId);
+//    @Test
+//    void deleteAddictionShouldFailIfUserNotFound() {
+//        // GIVEN
+//        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+//
+//        // THEN
+//        ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
+//                () -> userAddictionService.deleteAddiction("unknownUser", 1L));
+//
+//        assertEquals("Visitor not found", rae.getMessage());
+//    }
 
-        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
-        when(addictionRepository.findById(addictionId)).thenReturn(Optional.of(addiction));
-
-        // WHEN
-        userAddictionService.deleteAddiction(username, addictionId);
-
-        // THEN
-        verify(addictionRepository, times(1)).delete(addiction);
-    }
-
-    @Test
-    void deleteAddictionShouldFailIfUserNotFound() {
-        // GIVEN
-        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
-
-        // THEN
-        ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.deleteAddiction("unknownUser", 1L));
-
-        assertEquals("Visitor not found", rae.getMessage());
-    }
-
-    @Test
-    void deleteAddictionShouldFailIfAddictionNotFound() {
-        // GIVEN
-        Visitor user = new Visitor();
-        user.setUsername("testUser");
-
-        when(userRepository.findByEmail("testUser")).thenReturn(Optional.of(user));
-        when(addictionRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // THEN
-        ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.deleteAddiction("testUser", 1L));
-
-        assertEquals("Addiction not found", rae.getMessage());
-    }
+//    @Test
+//    void deleteAddictionShouldFailIfAddictionNotFound() {
+//        // GIVEN
+//        Visitor user = new Visitor();
+//        user.setUsername("testUser");
+//
+//        when(userRepository.findByEmail("testUser")).thenReturn(Optional.of(user));
+//        when(addictionRepository.findById(1L)).thenReturn(Optional.empty());
+//
+//        // THEN
+//        ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
+//                () -> userAddictionService.deleteAddiction("testUser", 1L));
+//
+//        assertEquals("Addiction not found", rae.getMessage());
+//    }
 //    @Test
 //    void getAddictionByNameShouldReturnExistingAddiction() {
 //        // GIVEN

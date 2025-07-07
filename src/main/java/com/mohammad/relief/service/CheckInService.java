@@ -1,11 +1,9 @@
 package com.mohammad.relief.service;
 
-import com.mohammad.relief.data.dto.response.CheckInResponseDto;
 import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.CheckIn;
 import com.mohammad.relief.data.entity.Visitor;
 import com.mohammad.relief.data.entity.enums.StreakLevel;
-import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.CheckInMapper;
 import com.mohammad.relief.repository.CheckInRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ public class CheckInService {
 
     private final CheckInRepository checkInRepository;
     private final UserService userService;
-    private final UserAddictionService addictionService;
+    private final AddictionService addictionService;
     private final CheckInMapper checkInMapper;
 
 //    public CheckInResponseDto register(String username, String addictionName, boolean isClean) throws ReliefApplicationException {

@@ -21,7 +21,7 @@ public class TriggerService {
 
     private final TriggerMapper triggerMapper;
     private final TriggerRepository triggerRepository;
-    private final UserAddictionService addictionService;
+    private final AddictionService addictionService;
 
 
     public TriggerResponseDTO addTrigger(

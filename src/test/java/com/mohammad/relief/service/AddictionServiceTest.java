@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserAddictionServiceTest {
+class AddictionServiceTest {
 
     @Mock
     private AddictionRepository addictionRepository;
@@ -39,7 +39,7 @@ class UserAddictionServiceTest {
     private UserService userService;
 
     @InjectMocks
-    private UserAddictionService userAddictionService;
+    private AddictionService addictionService;
 
 
     @Test
@@ -48,7 +48,7 @@ class UserAddictionServiceTest {
         AddictionRequestDto addictionRequestDto = new AddictionRequestDto("test", "test", Severity.LOW, 2);
         //WHEN
         //THEN
-        ReliefApplicationException rae = assertThrows(ReliefApplicationException.class, () -> userAddictionService.assignAddictionToUser(addictionRequestDto, null));
+        ReliefApplicationException rae = assertThrows(ReliefApplicationException.class, () -> addictionService.assignAddictionToUser(addictionRequestDto, null));
         assertEquals("No such a user", rae.getMessage());
 
     }
@@ -71,7 +71,7 @@ class UserAddictionServiceTest {
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.assignAddictionToUser(addictionRequestDto, username));
+                () -> addictionService.assignAddictionToUser(addictionRequestDto, username));
 
         assertEquals("Addiction already assigned to user", rae.getMessage());
     }
@@ -95,7 +95,7 @@ class UserAddictionServiceTest {
         when(addictionMapper.toDto(any())).thenReturn(new AddictionResponseDto(1L,"test", "test", Severity.LOW, 2));
 
         // THEN
-        assertDoesNotThrow(() -> userAddictionService.assignAddictionToUser(addictionRequestDto, username));
+        assertDoesNotThrow(() -> addictionService.assignAddictionToUser(addictionRequestDto, username));
         verify(addictionRepository, times(1)).save(any()); // Ensure addiction is saved
     }
     @Test
@@ -120,7 +120,7 @@ class UserAddictionServiceTest {
         when(addictionMapper.toDto(addiction)).thenReturn(new AddictionResponseDto(id, addictionName,"Updated Desc", Severity.HIGH, 1));
 
         // THEN
-        AddictionResponseDto response = userAddictionService.updateAddictionOfUser(addictionRequestDto, id, username);
+        AddictionResponseDto response = addictionService.updateAddictionOfUser(addictionRequestDto, id, username);
 
         assertEquals("Updated Desc", response.description());
         assertEquals(Severity.HIGH, response.severityLevel());
@@ -134,7 +134,7 @@ class UserAddictionServiceTest {
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.updateAddictionOfUser(new AddictionRequestDto("test", "desc", Severity.LOW, 2020), 1L, "unknownUser"));
+                () -> addictionService.updateAddictionOfUser(new AddictionRequestDto("test", "desc", Severity.LOW, 2020), 1L, "unknownUser"));
 
         assertEquals("Visitor not found", rae.getMessage());
     }
@@ -150,7 +150,7 @@ class UserAddictionServiceTest {
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.updateAddictionOfUser(new AddictionRequestDto("test", "desc", Severity.LOW, 2020), 1L, "testUser"));
+                () -> addictionService.updateAddictionOfUser(new AddictionRequestDto("test", "desc", Severity.LOW, 2020), 1L, "testUser"));
 
         assertEquals("Addiction not found", rae.getMessage());
     }
@@ -270,7 +270,7 @@ class UserAddictionServiceTest {
 
         // THEN
         ReliefApplicationException rae = assertThrows(ReliefApplicationException.class,
-                () -> userAddictionService.getAllUserAddictions("unknownUser"));
+                () -> addictionService.getAllUserAddictions("unknownUser"));
 
         assertEquals("Visitor not found", rae.getMessage());
     }

@@ -3,7 +3,7 @@ package com.mohammad.relief.controller;
 import com.mohammad.relief.data.dto.request.AddictionRequestDto;
 import com.mohammad.relief.data.dto.response.AddictionResponseDto;
 import com.mohammad.relief.exception.ReliefApplicationException;
-import com.mohammad.relief.service.UserAddictionService;
+import com.mohammad.relief.service.AddictionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,20 +18,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserAddictionController {
 
-    private final UserAddictionService userAddictionService;
+    private final AddictionService addictionService;
 
     @GetMapping("/addictions")
     @PreAuthorize("hasAuthority('USER')")
     public List<AddictionResponseDto> getUserAddiction(Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        return userAddictionService.getAllUserAddictions(username);
+        return addictionService.getAllUserAddictions(username);
 
     }
     @GetMapping("/addiction")
     @PreAuthorize("hasAuthority('USER')")
     public AddictionResponseDto getUserAddictionByName(@RequestParam String addictionName ,Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        return userAddictionService.getAddictionByName(username, addictionName);
+        return addictionService.getAddictionByName(username, addictionName);
 
     }
 
@@ -39,7 +39,7 @@ public class UserAddictionController {
     @PreAuthorize("hasAuthority('USER')")
     public AddictionResponseDto getUserAddictionById(@PathVariable Long id, Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        return userAddictionService.getAddictionDtoByIdAndUser(id, username);
+        return addictionService.getAddictionDtoByIdAndUser(id, username);
     }
 
     @PostMapping("/addictions")
@@ -50,7 +50,7 @@ public class UserAddictionController {
 
         String username = principal.getName();
 
-        AddictionResponseDto addiction = userAddictionService.assignAddictionToUser(addictionDto, username);
+        AddictionResponseDto addiction = addictionService.assignAddictionToUser(addictionDto, username);
 
         return ResponseEntity.ok(addiction);
     }
@@ -64,7 +64,7 @@ public class UserAddictionController {
             Principal principal) {
         try {
             String username = principal.getName();
-            AddictionResponseDto updatedAddiction = userAddictionService.updateAddictionOfUser(
+            AddictionResponseDto updatedAddiction = addictionService.updateAddictionOfUser(
                     addictionRequestDto, addictionId, username);
             return ResponseEntity.ok(updatedAddiction);
         } catch (ReliefApplicationException e) {
@@ -76,7 +76,7 @@ public class UserAddictionController {
     public ResponseEntity<Void> deleteAddiction(@PathVariable Long id,
                                                 Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        userAddictionService.deleteAddiction(username, id);
+        addictionService.deleteAddiction(username, id);
         return ResponseEntity.noContent().build();
     }
 

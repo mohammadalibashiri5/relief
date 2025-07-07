@@ -50,4 +50,12 @@ public class CategoryTypeService {
         categoryTypeRepository.delete(categoryType.get());
     }
 
+    public CategoryType findByName(String categoryTypeName, String email) throws ReliefApplicationException {
+        Admin admin = userService.findAdminByEmail(email);
+        Optional<CategoryType> categoryType = categoryTypeRepository.findByNameAndAdmin(categoryTypeName, admin);
+        if (categoryType.isEmpty()) {
+            throw new ReliefApplicationException("Category type not found");
+        }
+        return categoryType.get();
+    }
 }

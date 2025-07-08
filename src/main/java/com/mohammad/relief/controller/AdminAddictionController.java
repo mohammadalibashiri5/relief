@@ -19,14 +19,29 @@ import java.util.List;
 public class AdminAddictionController {
     private final AdminAddictionService adminAddictionService;
 
-    @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PostMapping
     public ResponseEntity<AdminAddictionResponse> createAddiction(@RequestBody @Valid AdminAddictionRequestDto requestDto, @RequestParam String categoryType, Principal principal) throws ReliefApplicationException {
         String email = principal.getName();
         return ResponseEntity.ok(adminAddictionService.createAddiction(requestDto, categoryType, email));
     }
     @PreAuthorize("permitAll()")
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<AdminAddictionResponse>> getAllAddictionByCategoryType(@RequestParam String categoryType) throws ReliefApplicationException {
         return ResponseEntity.ok(adminAddictionService.getAddictionByCategoryName(categoryType));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PutMapping
+    public ResponseEntity<AdminAddictionResponse> updateAddictionById(@RequestParam Long addictionId, @RequestBody @Valid AdminAddictionRequestDto requestDto, Principal principal) throws ReliefApplicationException {
+        String email = principal.getName();
+        return ResponseEntity.ok(adminAddictionService.updateAdminAddictionById(addictionId, requestDto, email));
+    }
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @DeleteMapping("/{addictionId}")
+    public ResponseEntity<Void> deleteAddictionById(@PathVariable Long addictionId, Principal principal) throws ReliefApplicationException {
+        String email = principal.getName();
+        adminAddictionService.deleteAdminAddictionById(addictionId, email);
+        return ResponseEntity.noContent().build();
+    }
+
 }

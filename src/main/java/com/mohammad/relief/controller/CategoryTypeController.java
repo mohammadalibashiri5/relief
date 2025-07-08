@@ -4,6 +4,7 @@ import com.mohammad.relief.data.dto.request.CategoryTypeRequestDto;
 import com.mohammad.relief.data.dto.response.CategoryTypeResponseDto;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.service.CategoryTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +21,7 @@ public class CategoryTypeController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryTypeResponseDto> addCategoryType(CategoryTypeRequestDto requestDto, Principal principal) throws ReliefApplicationException {
+    public ResponseEntity<CategoryTypeResponseDto> addCategoryType(@RequestBody @Valid CategoryTypeRequestDto requestDto, Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
         CategoryTypeResponseDto addedCategoryType = categoryTypeService.addCategoryType(requestDto, username);
         return ResponseEntity.ok(addedCategoryType);

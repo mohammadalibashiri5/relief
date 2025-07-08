@@ -17,7 +17,9 @@ public class Article {
     private String title;
     private String content;
     private String imageUrl;
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category_type_id")
+    private CategoryType category;
     @ManyToOne
     @JoinColumn(name = "admin_id")
     private Admin admin;

@@ -9,8 +9,6 @@ public record ArticleRequestDto(
         @NotNull @NotEmpty
         String content,
         @NotNull @NotEmpty
-        String imageUrl,
-        @NotNull @NotEmpty
-        String category
+        String imageUrl
 ) {
 }

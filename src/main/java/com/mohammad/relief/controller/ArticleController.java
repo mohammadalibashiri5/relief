@@ -22,15 +22,20 @@ public class ArticleController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @PostMapping("article")
-    public ResponseEntity<ArticleResponseDto> addArticle(@RequestBody @Valid ArticleRequestDto requestDto, Principal principal) throws Exception {
+    public ResponseEntity<ArticleResponseDto> addArticle(@RequestBody @Valid ArticleRequestDto requestDto, @RequestParam String categoryName, Principal principal) throws Exception {
         String username = principal.getName();
-        ArticleResponseDto addedArticle = articleService.addArticle(requestDto, username);
-        return ResponseEntity.ok(addedArticle);
+        ArticleResponseDto addedArticle = articleService.addArticle(requestDto,categoryName, username);
+        return new ResponseEntity<>(addedArticle, HttpStatus.CREATED);
+    }
+    @PreAuthorize("permitAll()")
+    @GetMapping("articlesByCategory")
+    public ResponseEntity<List<ArticleResponseDto>> getAllArticlesByCategory(@RequestParam String category) throws ReliefApplicationException {
+        return new ResponseEntity<>(articleService.getArticleByCategory(category), HttpStatus.OK);
     }
     @PreAuthorize("permitAll()")
     @GetMapping("articles")
-    public ResponseEntity<List<ArticleResponseDto>> getAllArticlesByCategory(@RequestParam String category) throws ReliefApplicationException {
-        return new ResponseEntity<>(articleService.getArticleByCategory(category), HttpStatus.OK);
+    public ResponseEntity<List<ArticleResponseDto>> getAllArticles() throws ReliefApplicationException {
+        return ResponseEntity.ok(articleService.getAllTenArticles());
     }
     @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     @PutMapping("article")

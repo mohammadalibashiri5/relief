@@ -26,9 +26,14 @@ public class AdminAddictionController {
         return ResponseEntity.ok(adminAddictionService.createAddiction(requestDto, categoryType, email));
     }
     @PreAuthorize("permitAll()")
-    @GetMapping
+    @GetMapping("/byCategoryType")
     public ResponseEntity<List<AdminAddictionResponse>> getAllAddictionByCategoryType(@RequestParam String categoryType) throws ReliefApplicationException {
         return ResponseEntity.ok(adminAddictionService.getAddictionByCategoryName(categoryType));
+    }
+    @PreAuthorize("permitAll()")
+    @GetMapping
+    public ResponseEntity<List<AdminAddictionResponse>> getAllAddictionByCategoryType() {
+        return ResponseEntity.ok(adminAddictionService.getAllAddictions());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PutMapping

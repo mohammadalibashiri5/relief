@@ -4,18 +4,15 @@ import com.mohammad.relief.data.dto.request.AdminAddictionRequestDto;
 import com.mohammad.relief.data.dto.response.AdminAddictionResponse;
 import com.mohammad.relief.data.entity.Admin;
 import com.mohammad.relief.data.entity.CategoryType;
-import com.mohammad.relief.data.entity.UserAddiction;
 import com.mohammad.relief.data.entity.addiction.AdminAddiction;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.AdminAddictionMapper;
 import com.mohammad.relief.repository.AdminAddictionRepository;
-import com.mohammad.relief.repository.UserAddictionRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +24,6 @@ public class AdminAddictionService {
 
     private final UserService userService;
     private final AdminAddictionRepository addictionRepository;
-    private final UserAddictionRepository userAddictionRepository;
     private final AdminAddictionMapper addictionMapper;
     private final CategoryTypeService categoryTypeService;
 
@@ -74,11 +70,6 @@ public class AdminAddictionService {
     public void deleteAdminAddictionById(Long addictionId, String email)
             throws ReliefApplicationException {
         AdminAddiction addiction = findAddictionAndValidateAdmin(addictionId, email);
-        UserAddiction userAddiction = userAddictionRepository.getAdminAddictionById(addictionId);
-        if (userAddiction != null) {
-            throw new ReliefApplicationException("Cannot delete this addiction as it is currently being used by users");
-        }
-
         addictionRepository.delete(addiction);
     }
 
@@ -95,4 +86,10 @@ public class AdminAddictionService {
         return addiction;
     }
 
+    public List<AdminAddictionResponse> getAllAddictions() {
+        List<AdminAddiction> addictions = addictionRepository.findAll();
+        return addictions.stream()
+                .map(addictionMapper::toDto)
+                .toList();
+    }
 }

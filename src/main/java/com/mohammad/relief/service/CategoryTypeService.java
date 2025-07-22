@@ -30,9 +30,8 @@ public class CategoryTypeService {
         return categoryTypeMapper.toDto(savedCategoryType);
 
     }
-    public List<CategoryTypeResponseDto> categoryTypes(String email) throws ReliefApplicationException {
-        Admin admin = userService.findAdminByEmail(email);
-        List<CategoryType> categoryTypes = categoryTypeRepository.findAllByAdmin(admin);
+    public List<CategoryTypeResponseDto> categoryTypes()  {
+        List<CategoryType> categoryTypes = categoryTypeRepository.findAll();
         return categoryTypes.stream()
                 .map(categoryTypeMapper::toDto)
                 .toList();

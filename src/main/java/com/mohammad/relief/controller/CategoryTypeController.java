@@ -26,11 +26,10 @@ public class CategoryTypeController {
         CategoryTypeResponseDto addedCategoryType = categoryTypeService.addCategoryType(requestDto, username);
         return ResponseEntity.ok(addedCategoryType);
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("permitAll()")
     @GetMapping
-    public ResponseEntity<List<CategoryTypeResponseDto>> getAllCategoryTypes(Principal principal) throws ReliefApplicationException {
-        String email = principal.getName();
-        return ResponseEntity.ok(categoryTypeService.categoryTypes(email));
+    public ResponseEntity<List<CategoryTypeResponseDto>> getAllCategoryTypes() throws ReliefApplicationException {
+        return ResponseEntity.ok(categoryTypeService.categoryTypes());
     }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping

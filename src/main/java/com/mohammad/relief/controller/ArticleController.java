@@ -34,8 +34,19 @@ public class ArticleController {
     }
     @PreAuthorize("permitAll()")
     @GetMapping("articles")
-    public ResponseEntity<List<ArticleResponseDto>> getAllArticles() throws ReliefApplicationException {
+    public ResponseEntity<List<ArticleResponseDto>> getAllArticles()  {
         return ResponseEntity.ok(articleService.getAllTenArticles());
+    }
+    @PreAuthorize("permitAll()")
+    @GetMapping("article/{id}")
+    public ResponseEntity<ArticleResponseDto> getArticleById(@PathVariable Long id) throws ReliefApplicationException {
+        return ResponseEntity.ok(articleService.getArticleById(id));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("articlesByAdmin")
+    public ResponseEntity<List<ArticleResponseDto>> getArticleByAdmin(Principal principal) throws ReliefApplicationException {
+        String username = principal.getName();
+        return ResponseEntity.ok(articleService.getArticleByAdmin(username));
     }
     @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     @PutMapping("article")
@@ -44,8 +55,8 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.updateArticleById(requestDto, articleId, username));
     }
     @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    @DeleteMapping("article")
-    public ResponseEntity<Void> deleteArticle(Long articleId, Principal principal) throws ReliefApplicationException {
+    @DeleteMapping("article/{articleId}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long articleId, Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
         articleService.deleteArticleById(articleId, username);
         return ResponseEntity.noContent().build();

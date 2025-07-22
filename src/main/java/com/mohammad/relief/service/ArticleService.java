@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +86,23 @@ public class ArticleService {
 
     public List<ArticleResponseDto> getAllTenArticles() {
         List<Article> articles = articleRepository.findAll(Pageable.ofSize(10)).toList();
+        return articles
+                .stream()
+                .map(articleMapper::toDto)
+                .toList();
+    }
+
+    public ArticleResponseDto getArticleById(Long id) throws ReliefApplicationException {
+        Optional<Article> article = articleRepository.findById(id);
+        if (article.isEmpty()) {
+            throw new ReliefApplicationException("No Article with this id");
+        }
+        return articleMapper.toDto(article.get());
+    }
+
+    public List<ArticleResponseDto> getArticleByAdmin(String email) throws ReliefApplicationException {
+        Admin admin = userService.findAdminByEmail(email);
+        List<Article> articles = articleRepository.findAllByAdmin(admin);
         return articles
                 .stream()
                 .map(articleMapper::toDto)

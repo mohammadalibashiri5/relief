@@ -13,6 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
+/**
+ * This controller allows the user to create their own addictions.
+ *
+ * @deprecated Since this is admin who creates the addictions, and the user selects them.
+ * {@link com.mohammad.relief.controller.addiction.AdminAddictionController}
+ */
+
+@Deprecated(forRemoval = true)
 @RestController
 @RequestMapping("/api/v1/user/")
 @RequiredArgsConstructor
@@ -27,9 +35,10 @@ public class UserAddictionController {
         return addictionService.getAllUserAddictions(username);
 
     }
+
     @GetMapping("/addiction")
     @PreAuthorize("hasAuthority('USER')")
-    public AddictionResponseDto getUserAddictionByName(@RequestParam String addictionName ,Principal principal) throws ReliefApplicationException {
+    public AddictionResponseDto getUserAddictionByName(@RequestParam String addictionName, Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
         return addictionService.getAddictionByName(username, addictionName);
 
@@ -58,7 +67,7 @@ public class UserAddictionController {
 
     @PutMapping("/update/{addictionId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateAddiction(
+    public ResponseEntity<String> updateAddiction(
             @PathVariable Long addictionId,
             @RequestBody AddictionRequestDto addictionRequestDto,
             Principal principal) {
@@ -66,7 +75,7 @@ public class UserAddictionController {
             String username = principal.getName();
             AddictionResponseDto updatedAddiction = addictionService.updateAddictionOfUser(
                     addictionRequestDto, addictionId, username);
-            return ResponseEntity.ok(updatedAddiction);
+            return ResponseEntity.ok(updatedAddiction + " was updated");
         } catch (ReliefApplicationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The addiction could not be updated");
         }

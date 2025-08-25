@@ -26,11 +26,14 @@ public class UserAddictionService {
     private final UserAddictionMapper userAddictionMapper;
 
 
-    public UserAddictionResponseDto createUserAddiction(UserAddictionRequestDto req, Long addictionId, String email) throws ReliefApplicationException {
+    public UserAddictionResponseDto createUserAddiction(UserAddictionRequestDto req, String addictionName, String email) throws ReliefApplicationException {
         Visitor user = userService.findByEmail(email);
-        Optional<AdminAddiction> adminAddiction = adminAddictionRepository.findById(addictionId);
+        Optional<AdminAddiction> adminAddiction = adminAddictionRepository.findByName(addictionName);
         if (adminAddiction.isEmpty()) {
-            throw new ReliefApplicationException("No such an addiction with this id");
+            throw new ReliefApplicationException("No such an addiction with this name");
+        }
+        if (Boolean.TRUE.equals(userAddictionRepository.existsByAddiction_Name(addictionName))){
+            throw new ReliefApplicationException("This user already has this addiction");
         }
         UserAddiction addiction = userAddictionMapper.toEntity(req);
         addiction.setAddiction(adminAddiction.get());
@@ -42,6 +45,9 @@ public class UserAddictionService {
     public List<UserAddictionResponseDto> getAllUserAddiction(String email) throws ReliefApplicationException {
         Visitor user = userService.findByEmail(email);
         return userAddictionRepository.findByUser(user).stream().map(userAddictionMapper::toDto).toList();
+    }
+    public List<AdminAddictionResponse> getAllAddictionsByCategoryType(String categoryType) throws ReliefApplicationException {
+        return adminAddictionService.getAddictionByCategoryName(categoryType);
     }
 
 

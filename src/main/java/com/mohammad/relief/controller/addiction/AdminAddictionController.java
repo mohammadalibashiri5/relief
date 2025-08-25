@@ -1,4 +1,4 @@
-package com.mohammad.relief.controller;
+package com.mohammad.relief.controller.addiction;
 
 import com.mohammad.relief.data.dto.request.AdminAddictionRequestDto;
 import com.mohammad.relief.data.dto.response.AdminAddictionResponse;

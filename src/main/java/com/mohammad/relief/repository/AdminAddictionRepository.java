@@ -3,7 +3,6 @@ package com.mohammad.relief.repository;
 import com.mohammad.relief.data.entity.addiction.AdminAddiction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,4 +11,5 @@ import java.util.Optional;
 public interface AdminAddictionRepository extends JpaRepository<AdminAddiction, Long> {
     List<AdminAddiction> findByCategoryType_Name(String categoryTypeName);
 
+    Optional<AdminAddiction> findByName(String addictionName);
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -26,10 +27,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleGlobalException(Exception ex) {
-        return buildErrorResponse("An unexpected error occurred "+ ex.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR );
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> constraintViolation(MethodArgumentNotValidException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 
     private ResponseEntity<ApiErrorResponse> buildErrorResponse(String message, HttpStatus status) {

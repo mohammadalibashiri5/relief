@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface UserAddictionRepository extends JpaRepository<UserAddiction, Integer> {
-    UserAddiction getAdminAddictionById(Long addictionId);
-
     List<UserAddiction> findByUser(Visitor user);
+
+    Boolean existsByAddiction_Name(String addictionName);
 }

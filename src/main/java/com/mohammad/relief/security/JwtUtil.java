@@ -70,10 +70,6 @@ public class JwtUtil {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
-    }
-
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
@@ -87,49 +83,7 @@ public class JwtUtil {
                 .getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
-    }
-
-    // Get roles from token
     public String getRolesFromToken(String token) {
         return getClaimFromToken(token, claims -> claims.get("roles", String.class));
     }
-
-
-//    public String extractEmail(String token) {
-//        try {
-//            Claims claims = extractAllClaims(token);
-//            return claims.getSubject();
-//        } catch (JwtException | JwtAuthenticationException e) {
-//            log.error("Error extracting email from token: {}", e.getMessage());
-//            return null;
-//        }
-//    }
-//
-//
-//    public boolean validateToken(String token, UserDetails userDetails) {
-//        try {
-//            Claims claims = extractAllClaims(token);
-//            boolean isTokenExpired = claims.getExpiration().before(new Date());
-//            boolean isUsernameMatch = claims.getSubject().equals(userDetails.getUsername());
-//            return !isTokenExpired && isUsernameMatch;
-//        } catch (JwtException | IllegalArgumentException | JwtAuthenticationException e) {
-//            log.error("Invalid JWT token: {}", e.getMessage());
-//            return false;
-//        }
-//    }
-//
-//    private Claims extractAllClaims(String jwt) throws JwtAuthenticationException {
-//        try {
-//            return Jwts.parserBuilder()
-//                    .setSigningKey(key)
-//                    .build()
-//                    .parseClaimsJws(jwt)
-//                    .getBody();
-//        } catch (JwtException e) {
-//            throw new JwtAuthenticationException("Invalid JWT token", e);
-//        }
-//    }
 }

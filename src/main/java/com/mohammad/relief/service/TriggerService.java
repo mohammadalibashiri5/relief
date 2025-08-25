@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class TriggerService {
 
     private final TriggerMapper triggerMapper;
     private final TriggerRepository triggerRepository;
-    private final UserAddictionService addictionService;
+    private final AddictionService addictionService;
 
 
     public TriggerResponseDTO addTrigger(
@@ -61,7 +60,7 @@ public class TriggerService {
         return triggers
                 .stream()
                 .map(triggerMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public TriggerResponseDTO updateTrigger(TriggerRequestDTO triggerRequestDTO, Long id) throws ReliefApplicationException {

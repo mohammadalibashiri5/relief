@@ -1,4 +1,4 @@
-package com.mohammad.relief.configuration;
+package com.mohammad.relief.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

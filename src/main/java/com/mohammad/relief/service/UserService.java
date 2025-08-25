@@ -4,23 +4,25 @@ package com.mohammad.relief.service;
 import com.mohammad.relief.data.dto.response.ModifiedUserDto;
 import com.mohammad.relief.data.dto.request.UserRequestDto;
 import com.mohammad.relief.data.dto.response.UserResponseDto;
+import com.mohammad.relief.data.entity.Admin;
 import com.mohammad.relief.data.entity.Visitor;
-import com.mohammad.relief.data.entity.enums.Roles;
+import com.mohammad.relief.data.entity.enums.RoleType;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.UserMapper;
+import com.mohammad.relief.repository.AdminRepository;
 import com.mohammad.relief.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -28,14 +30,11 @@ public class UserService {
         if (userRequestDto == null) {
             throw new ReliefApplicationException("UserRequestDto is null");
         }
-        if (!isDateValid(userRequestDto.dateOfBirth())) {
-            throw new ReliefApplicationException("You must be at least 13 years old to register.");
-        }
 
-        if (!userRepository.existsByUsername(userRequestDto.username()) && !userRepository.existsByEmail(userRequestDto.email())) {
+        if (!userRepository.existsByUsername(userRequestDto.email())) {
             String hashedPassed = passwordEncoder.encode(userRequestDto.password());
             Visitor user = userMapper.toEntity(userRequestDto);
-            user.setRole(String.valueOf(Roles.ROLE_VISITOR));
+            user.setRole(RoleType.ROLE_VISITOR);
             user.setPassword(hashedPassed);
             Visitor savedUser = userRepository.save(user);
             return userMapper.toResponseDto(savedUser);
@@ -76,8 +75,17 @@ public class UserService {
     }
 
     public UserResponseDto getUserDetails(String email) throws ReliefApplicationException {
-        Visitor user = findByEmail(email);
-        return userMapper.toResponseDto(user);
+        Optional<Admin> adminOpt = adminRepository.findByEmail(email);
+        if (adminOpt.isPresent()) {
+            return userMapper.toAdminResponseDto(adminOpt.get());
+        }
+
+        Optional<Visitor> visitorOpt = userRepository.findByEmail(email);
+        if (visitorOpt.isPresent()) {
+            return userMapper.toResponseDto(visitorOpt.get());
+        }
+
+        throw new ReliefApplicationException("No user found with email: " + email);
     }
 
     public void deleteUser(String name) {
@@ -92,18 +100,31 @@ public class UserService {
         }else throw new ReliefApplicationException("No such a user");
     }
 
-    private boolean isDateValid(LocalDate dateOfBirth) {
-        LocalDate today = LocalDate.now();
-        LocalDate thirteenYearsAgo = today.minusYears(13);
-        return !dateOfBirth.isAfter(thirteenYearsAgo);
+    public UserResponseDto registerAdmin(UserRequestDto userRequestDto) throws ReliefApplicationException {
+        if (userRequestDto == null) {
+            throw new ReliefApplicationException("UserRequestDto is null");
+        }
+
+        if (!userRepository.existsByUsername(userRequestDto.email())) {
+            String hashedPassed = passwordEncoder.encode(userRequestDto.password());
+            Admin admin = userMapper.toAdmin(userRequestDto);
+            admin.setRole(RoleType.ROLE_ADMIN);
+            admin.setPassword(hashedPassed);
+            Admin savedUser = adminRepository.save(admin);
+            return userMapper.toAdminResponseDto(savedUser);
+        } else throw new ReliefApplicationException("This Admin already exists");
+    }
+    public Admin findAdminByEmail(String email) throws ReliefApplicationException {
+        Optional<Admin> admin = adminRepository.findByEmail(email);
+        if (admin.isPresent()) {
+            return admin.get();
+        }else throw new ReliefApplicationException("No such an Admin");
+    }
+    public UserResponseDto getAdminDetails(String email) throws ReliefApplicationException {
+        Admin admin = findAdminByEmail(email);
+        return userMapper.toAdminResponseDto(admin);
     }
 
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
 
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
 
 }

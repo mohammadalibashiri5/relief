@@ -1,5 +1,6 @@
 package com.mohammad.relief.data.entity;
 
+import com.mohammad.relief.data.entity.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,8 @@ public abstract class User {
 
     private LocalDateTime updatedAt;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     private LocalDate dateOfBirth;
 

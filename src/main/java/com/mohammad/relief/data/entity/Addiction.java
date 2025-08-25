@@ -20,6 +20,9 @@ public class Addiction {
     private String name;
     @Column(length = 1000)
     private String description;
+    @ManyToOne
+    @JoinColumn(name = "category_type_id")
+    private CategoryType categoryType;
     @Enumerated(EnumType.STRING)
     private Severity severityLevel;
     private Integer yearOfAddiction;

@@ -1,6 +1,6 @@
-package com.mohammad.relief.configuration;
+package com.mohammad.relief.config;
 
-import com.mohammad.relief.util.JwtFilter;
+import com.mohammad.relief.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,9 +29,7 @@ public class SecurityConfig implements WebMvcConfigurer {
             "/api/v1/auth/**", "/v2/api-docs", "/v3/api-docs",
             "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**",
             "/configuration/ui", "/configuration/security", "/swagger-ui/**",
-            "/webjars/**", "/swagger-ui.html", "/api/auth/**", "/api/test/**",
-            "/authenticate", "/api/v1/users/register", "/auth/login","/api/v1/users/check-email","/api/v1/users/check-username"
-    };
+            "/api/v1/articles", "/webjars/**", "/swagger-ui.html", "/api/auth/**", "/api/test/**", "/api/v1/users/register", "/auth/login"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {

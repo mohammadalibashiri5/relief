@@ -1,8 +1,9 @@
 package com.mohammad.relief.data.dto.response;
 
+import com.mohammad.relief.data.entity.enums.RoleType;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 
 public record UserResponseDto(
@@ -12,4 +13,5 @@ public record UserResponseDto(
         String email,
         LocalDateTime createdAt,
         LocalDate dateOfBirth,
-        List<AddictionResponseDto> addictions) {}
+        RoleType role
+        ) {}

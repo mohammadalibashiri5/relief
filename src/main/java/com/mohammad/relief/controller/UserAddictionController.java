@@ -3,7 +3,7 @@ package com.mohammad.relief.controller;
 import com.mohammad.relief.data.dto.request.AddictionRequestDto;
 import com.mohammad.relief.data.dto.response.AddictionResponseDto;
 import com.mohammad.relief.exception.ReliefApplicationException;
-import com.mohammad.relief.service.UserAddictionService;
+import com.mohammad.relief.service.AddictionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,12 +16,20 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
+/**
+ * This controller allows the user to create their own addictions.
+ *
+ * @deprecated Since this is admin who creates the addictions, and the user selects them.
+ * {@link com.mohammad.relief.controller.addiction.AdminAddictionController}
+ */
+
+@Deprecated(forRemoval = true)
 @RestController
-@RequestMapping("/api/v1/user/addictions")
+@RequestMapping("/api/v1/user/")
 @RequiredArgsConstructor
 public class UserAddictionController {
 
-    private final UserAddictionService userAddictionService;
+    private final AddictionService addictionService;
 
     @Operation(summary = "Get all addictions for the current user")
     @ApiResponses(value = {
@@ -32,48 +40,31 @@ public class UserAddictionController {
     @PreAuthorize("hasAuthority('USER')")
     public List<AddictionResponseDto> getUserAddictions(Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        return userAddictionService.getAllUserAddictions(username);
+        return addictionService.getAllUserAddictions(username);
     }
 
+    @GetMapping("/addiction")
+    @PreAuthorize("hasAuthority('USER')")
+    public AddictionResponseDto getUserAddictionByName(@RequestParam String addictionName, Principal principal) throws ReliefApplicationException {
+        String username = principal.getName();
+        return addictionService.getAddictionByName(username, addictionName);
 
-    @Operation(summary = "Get addiction by the id for the current user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval"),
-            @ApiResponse(responseCode = "403", description = "forbidden")
-    })
+    }
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER')")
     public AddictionResponseDto getUserAddictionById(@PathVariable Long id, Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        return userAddictionService.getAddictionDtoByIdAndUser(id, username);
+        return addictionService.getAddictionDtoByIdAndUser(id, username);
     }
 
-    @Operation(summary = "Get addiction by name for the current user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval"),
-            @ApiResponse(responseCode = "403", description = "forbidden")
-    })
-    @GetMapping("/search")
-    @PreAuthorize("hasAuthority('USER')")
-    public AddictionResponseDto getUserAddictionByName(@RequestParam String name, Principal principal) throws ReliefApplicationException {
-        String username = principal.getName();
-        return userAddictionService.getAddictionByName(username, name);
-    }
-
-
-    @Operation(summary = "add the addiction for the authentified user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successfully add"),
-            @ApiResponse(responseCode = "403", description = "forbidden")
-    })
-    @PostMapping
+    @PostMapping("/addictions")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<AddictionResponseDto> assignAddictionToUser(
             @RequestBody AddictionRequestDto addictionDto,
             Principal principal) throws ReliefApplicationException {
 
         String username = principal.getName();
-        AddictionResponseDto addiction = userAddictionService.assignAddictionToUser(addictionDto, username);
+        AddictionResponseDto addiction = addictionService.assignAddictionToUser(addictionDto, username);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(addiction);
     }
@@ -86,32 +77,25 @@ public class UserAddictionController {
     })
     @PutMapping("/{addictionId}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateAddiction(
+    public ResponseEntity<String> updateAddiction(
             @PathVariable Long addictionId,
             @RequestBody AddictionRequestDto addictionRequestDto,
             Principal principal) {
         try {
             String username = principal.getName();
-            AddictionResponseDto updatedAddiction = userAddictionService.updateAddictionOfUser(
+            AddictionResponseDto updatedAddiction = addictionService.updateAddictionOfUser(
                     addictionRequestDto, addictionId, username);
-            return ResponseEntity.ok(updatedAddiction);
+            return ResponseEntity.ok(updatedAddiction + " was updated");
         } catch (ReliefApplicationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The addiction could not be updated");
         }
     }
 
-
-
-    @Operation(summary = "delete the addiction by id for the current user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No Content"),
-            @ApiResponse(responseCode = "403", description = "forbidden")
-    })
-    @DeleteMapping("/{name}")
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<Void> deleteAddiction(@PathVariable String name, Principal principal) throws ReliefApplicationException {
+    @DeleteMapping("/addictions/{id}")
+    public ResponseEntity<Void> deleteAddiction(@PathVariable Long id,
+                                                Principal principal) throws ReliefApplicationException {
         String username = principal.getName();
-        userAddictionService.deleteAddiction(username, name);
+        addictionService.deleteAddiction(username, id);
         return ResponseEntity.noContent().build();
     }
 }

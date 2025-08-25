@@ -6,7 +6,7 @@ Relief is a web application that helps users manage and overcome their addiction
 
 ## 🔥 Features for now
 - ✅ User registration and authentication
-- 🚨 Track and reflect on personal triggers
+- 🚨 Adding addictions and triggers
 - 💡 Adding Solutions for each trigger
 - 👨🏻‍💻 User Admin roles
 - 📕 Reading different articles
@@ -39,5 +39,5 @@ Everyone struggles with something. This app was built to:
 
 ```bash
 git clone https://github.com/mohammadalibashiri5/relief.git
-cd relief-app
+cd relief
 ./mvnw clean install

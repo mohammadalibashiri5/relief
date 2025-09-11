@@ -21,11 +21,12 @@ RUN mvn clean package -DskipTests
 
 # Production Stage
 FROM amazoncorretto:17 AS production
-ARG PROFILE=prod
+
+ENV SPRING_PROFILES_ACTIVE=prod
 
 WORKDIR /app
 COPY --from=build /build/target/*.jar /app/Relief-app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod}", "-jar", "Relief-app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-jar", "Relief-app.jar"]

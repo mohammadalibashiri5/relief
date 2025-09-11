@@ -11,5 +11,5 @@ import java.util.List;
 public interface UserAddictionRepository extends JpaRepository<UserAddiction, Integer> {
     List<UserAddiction> findByUser(Visitor user);
 
-    Boolean existsByAddiction_Name(String addictionName);
+    Boolean existsByAddiction_NameAndUser(String addictionName, Visitor user);
 }

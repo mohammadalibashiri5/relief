@@ -3,6 +3,7 @@ package com.mohammad.relief.config;
 import com.mohammad.relief.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,6 +39,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
                         .requestMatchers(WHITE_LIST_URL).permitAll() // Public endpoints
                         .anyRequest().authenticated() // Secure all other endpoints
                 );
@@ -51,7 +53,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of("http://localhost:80","http://localhost:4200","http://localhost"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Origin", "Accept"));
         configuration.setExposedHeaders(List.of("Authorization"));
@@ -71,13 +73,4 @@ public class SecurityConfig implements WebMvcConfigurer {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")               // Allow all endpoints
-                .allowedOrigins("http://localhost:4200")  // Angular frontend origin
-                .allowedMethods("GET", "POST", "PUT", "DELETE")  // Common HTTP methods
-                .allowedHeaders("*")          // Allow all headers
-                .allowCredentials(true)       // Credentials (cookies, authorization headers, etc.)
-                .maxAge(3600);                // Cache preflight response for 1 hour
-    }
 }

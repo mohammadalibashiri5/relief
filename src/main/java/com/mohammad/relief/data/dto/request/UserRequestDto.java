@@ -22,7 +22,7 @@ public record UserRequestDto(
         String email,
         @NotNull
         @Pattern(
-                regexp = "^(?=[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,16}$",
+                regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,16}$",
                 message = "Password must contain at least one uppercase letter, " +
                         "one digit, one special character " +
                         "and be between 8 and 16 characters long."

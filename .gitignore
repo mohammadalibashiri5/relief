@@ -29,7 +29,13 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+
+# Environment files with secrets
+.env.local
+application-dev.properties
+
 ### VS Code ###
 .vscode/
 /src/main/resources/application-dev.properties
-.env
+.env.dev
+.env.prod

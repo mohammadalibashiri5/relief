@@ -32,7 +32,7 @@ public class UserAddictionService {
         if (adminAddiction.isEmpty()) {
             throw new ReliefApplicationException("No such an addiction with this name");
         }
-        if (Boolean.TRUE.equals(userAddictionRepository.existsByAddiction_Name(addictionName))){
+        if (Boolean.TRUE.equals(userAddictionRepository.existsByAddiction_NameAndUser(addictionName, user))){
             throw new ReliefApplicationException("This user already has this addiction");
         }
         UserAddiction addiction = userAddictionMapper.toEntity(req);

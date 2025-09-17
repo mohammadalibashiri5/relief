@@ -26,6 +26,12 @@ public class AddictionController {
         String email = principal.getName();
         return ResponseEntity.ok(userAddictionService.createUserAddiction(requestDto,addictionName, email));
     }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('VISITOR')")
+    public ResponseEntity<UserAddictionResponseDto> updateAddictionById(@PathVariable Long id, @Valid @RequestBody UserAddictionRequestDto requestDto, Principal principal) throws ReliefApplicationException {
+        String email = principal.getName();
+        return ResponseEntity.ok(userAddictionService.updateAddictionByIdAndUser(id, requestDto, email));
+    }
     @PreAuthorize("hasRole('VISITOR')")
     @GetMapping("/byCategoryType")
     public ResponseEntity<List<AdminAddictionResponse>> getAllAddictionByCategoryType(@RequestParam String categoryType) throws ReliefApplicationException {
@@ -36,6 +42,14 @@ public class AddictionController {
     public ResponseEntity<List<UserAddictionResponseDto>> getAllAddictions(Principal principal) throws ReliefApplicationException {
         String email = principal.getName();
         return ResponseEntity.ok(userAddictionService.getAllUserAddiction(email));
+
+    }
+    @PreAuthorize("hasRole('VISITOR')")
+    @DeleteMapping( "/{addictionId}")
+    public ResponseEntity<Void> deleteAddictionById( @PathVariable Long addictionId, Principal principal) throws ReliefApplicationException {
+        String email = principal.getName();
+        userAddictionService.deleteAddictionByIdAndUser(addictionId, email);
+        return ResponseEntity.noContent().build();
 
     }
 }

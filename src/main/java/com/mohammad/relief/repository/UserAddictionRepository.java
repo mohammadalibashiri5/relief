@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface UserAddictionRepository extends JpaRepository<UserAddiction, Long> {
     List<UserAddiction> findByUser(Visitor user);
 
-    Boolean existsByAddiction_NameAndUser(String addictionName, Visitor user);
+    Boolean existsByAdminAddiction_NameAndUser(String addictionName, Visitor user);
 
     Optional<UserAddiction> findByIdAndUser(Long id, Visitor user);
 }

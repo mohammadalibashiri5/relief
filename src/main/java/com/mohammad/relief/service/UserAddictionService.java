@@ -35,11 +35,11 @@ public class UserAddictionService {
         if (adminAddiction.isEmpty()) {
             throw new ReliefApplicationException("No such an addiction with this name");
         }
-        if (Boolean.TRUE.equals(userAddictionRepository.existsByAddiction_NameAndUser(addictionName, user))){
+        if (Boolean.TRUE.equals(userAddictionRepository.existsByAdminAddiction_NameAndUser(addictionName, user))){
             throw new ReliefApplicationException("This user already has this addiction");
         }
         UserAddiction addiction = userAddictionMapper.toEntity(req);
-        addiction.setAddiction(adminAddiction.get());
+        addiction.setAdminAddiction(adminAddiction.get());
         addiction.setUser(user);
         UserAddiction savedAddiction = userAddictionRepository.save(addiction);
         return userAddictionMapper.toDto(savedAddiction);
@@ -87,7 +87,7 @@ public class UserAddictionService {
      * Finds a user addiction by ID and validates that it belongs to the user with given email.
      * @throws ReliefApplicationException if addiction not found or doesn't belong to user
      */
-    private UserAddiction findAddictionByIdAndValidateOwnership(Long addictionId, String email) throws ReliefApplicationException {
+    public UserAddiction findAddictionByIdAndValidateOwnership(Long addictionId, String email) throws ReliefApplicationException {
         Visitor user = userService.findByEmail(email);
         Optional<UserAddiction> addiction = userAddictionRepository.findByIdAndUser(addictionId, user);
         if (addiction.isEmpty()) {

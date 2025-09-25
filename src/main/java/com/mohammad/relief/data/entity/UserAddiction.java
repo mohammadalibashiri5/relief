@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -23,14 +23,14 @@ public class UserAddiction {
     private Visitor user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "addiction_id")
-    private AdminAddiction addiction;
+    @JoinColumn(name = "admin_addiction_id")
+    private AdminAddiction adminAddiction;
     @Enumerated(EnumType.STRING)
     private Severity severityLevel;
     private Integer yearsOfAddiction;
 
-    @ElementCollection
-    private Set<String> triggers = new HashSet<>();
+    @OneToMany(mappedBy = "userAddiction", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Trigger> triggers = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "userAddiction", cascade = CascadeType.ALL)
 //    private List<CheckIn> checkIns = new ArrayList<>();

@@ -29,8 +29,6 @@ public class Addiction {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Visitor user;
-    @OneToMany(mappedBy = "addiction", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Trigger> triggers = new ArrayList<>();
     @OneToMany(mappedBy = "addiction" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CheckIn> checkIns = new ArrayList<>();
     private String imageUrl;

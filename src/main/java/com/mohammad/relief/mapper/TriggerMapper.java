@@ -10,6 +10,6 @@ import org.mapstruct.Mapping;
 public interface TriggerMapper {
     @Mapping(target = "id", ignore = true)
     Trigger toEntity(TriggerRequestDTO triggerDto);
-    @Mapping(target = "addictionName", source = "addiction.name")
+    @Mapping(target = "addictionName", source = "userAddiction.adminAddiction.name")
     TriggerResponseDTO toDto(Trigger trigger);
 }

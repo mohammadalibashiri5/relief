@@ -2,8 +2,8 @@ package com.mohammad.relief.service;
 
 import com.mohammad.relief.data.dto.request.TriggerRequestDTO;
 import com.mohammad.relief.data.dto.response.TriggerResponseDTO;
-import com.mohammad.relief.data.entity.Addiction;
 import com.mohammad.relief.data.entity.Trigger;
+import com.mohammad.relief.data.entity.UserAddiction;
 import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.TriggerMapper;
 import com.mohammad.relief.repository.TriggerRepository;
@@ -20,7 +20,7 @@ public class TriggerService {
 
     private final TriggerMapper triggerMapper;
     private final TriggerRepository triggerRepository;
-    private final AddictionService addictionService;
+    private final UserAddictionService addictionService;
 
 
     public TriggerResponseDTO addTrigger(
@@ -32,14 +32,10 @@ public class TriggerService {
             throw new ReliefApplicationException("Trigger is null");
         }
 
-        Addiction addiction = addictionService.getAddictionByIdAndUser(addictionId, username);
-
-        if (addiction == null) {
-            throw new ReliefApplicationException("Addiction not found");
-        }
+        UserAddiction addiction = addictionService.findAddictionByIdAndValidateOwnership(addictionId, username);
 
         Trigger trigger = triggerMapper.toEntity(triggerRequestDTO);
-        trigger.setAddiction(addiction);
+        trigger.setUserAddiction(addiction);
         trigger.setCreatedAt(LocalDateTime.now());
 
         if(!isTriggerExist(trigger.getName())) {
@@ -51,12 +47,12 @@ public class TriggerService {
     }
 
     public List<TriggerResponseDTO> getAllTriggersByAddiction(String username, Long addictionId) throws ReliefApplicationException {
-        Addiction addiction = addictionService.getAddictionByIdAndUser(addictionId, username);
+        UserAddiction addiction = addictionService.findAddictionByIdAndValidateOwnership(addictionId, username);
 
         if (addiction == null) {
             throw new ReliefApplicationException("Addiction not found");
         }
-        List<Trigger> triggers = triggerRepository.findByAddiction(addiction);
+        List<Trigger> triggers = triggerRepository.findByUserAddiction(addiction);
         return triggers
                 .stream()
                 .map(triggerMapper::toDto)

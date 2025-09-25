@@ -19,8 +19,8 @@ public class Trigger {
     private Long id;
     private String name;
     @ManyToOne
-    @JoinColumn(name = "addiction_id")
-    private Addiction addiction;
+    @JoinColumn(name = "user_addiction_id")
+    private UserAddiction userAddiction;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "trigger", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Solution> solutions = new ArrayList<>();
     private String description;

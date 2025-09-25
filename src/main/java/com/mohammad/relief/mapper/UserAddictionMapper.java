@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserAddictionMapper {
     UserAddiction toEntity(UserAddictionRequestDto requestDto);
-    @Mapping(target = "addictionName" , source = "addiction.name")
-    @Mapping(target = "categoryType" , source = "addiction.categoryType.name")
+    @Mapping(target = "addictionName" , source = "adminAddiction.name")
+    @Mapping(target = "categoryType" , source = "adminAddiction.categoryType.name")
     UserAddictionResponseDto toDto(UserAddiction userAddiction);
 }

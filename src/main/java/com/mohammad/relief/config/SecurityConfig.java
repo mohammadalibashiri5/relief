@@ -52,7 +52,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:80","http://localhost:4200","http://localhost", "https://reliefpro.netlify.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:80","http://localhost:4200","http://localhost", "https://reliefpro.netlify.app","https://relief-addiction.com"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Origin", "Accept"));
         configuration.setExposedHeaders(List.of("Authorization"));

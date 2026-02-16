@@ -1,0 +1,127 @@
+package com.mohammad.relief.features.userManagement.domain;
+
+
+import com.mohammad.relief.features.userManagement.api.ModifiedUserDto;
+import com.mohammad.relief.features.userManagement.api.UserRequestDto;
+import com.mohammad.relief.features.userManagement.api.UserResponseDto;
+import com.mohammad.relief.common.exception.ReliefApplicationException;
+import com.mohammad.relief.features.userManagement.api.UserMapper;
+import com.mohammad.relief.features.userManagement.data.AdminRepository;
+import com.mohammad.relief.features.userManagement.data.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserResponseDto registerUser(UserRequestDto userRequestDto) throws ReliefApplicationException {
+        if (userRequestDto == null) {
+            throw new ReliefApplicationException("UserRequestDto is null");
+        }
+
+        if (!userRepository.existsByUsername(userRequestDto.email())) {
+            String hashedPassed = passwordEncoder.encode(userRequestDto.password());
+            Visitor user = userMapper.toEntity(userRequestDto);
+            user.setRole(RoleType.ROLE_VISITOR);
+            user.setPassword(hashedPassed);
+            Visitor savedUser = userRepository.save(user);
+            return userMapper.toResponseDto(savedUser);
+        } else throw new ReliefApplicationException("Visitor already exists");
+    }
+
+    public UserResponseDto updateUser(ModifiedUserDto userResponseDto, String email) throws ReliefApplicationException {
+        Optional<Visitor> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new ReliefApplicationException("Visitor not found");
+        }
+        Visitor foundUser = user.get();
+        boolean isUpdated = false;
+
+        if (userResponseDto.name() != null && !foundUser.getName().equals(userResponseDto.name())) {
+            foundUser.setName(userResponseDto.name());
+            isUpdated = true;
+        }
+        if (userResponseDto.familyName() != null && !foundUser.getFamilyName().equals(userResponseDto.familyName())) {
+            foundUser.setFamilyName(userResponseDto.familyName());
+            isUpdated = true;
+        }
+        if (userResponseDto.password() != null && !foundUser.getPassword().equals(userResponseDto.password())) {
+            PasswordEncoder passwordEncoderUpdate = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+            foundUser.setPassword(passwordEncoderUpdate.encode(userResponseDto.password()));
+            isUpdated = true;
+        }
+        if (userResponseDto.dateOfBirth() != null && !foundUser.getDateOfBirth().equals(userResponseDto.dateOfBirth())) {
+            foundUser.setDateOfBirth(userResponseDto.dateOfBirth());
+            isUpdated = true;
+        }
+        if (isUpdated) {
+            userRepository.save(foundUser);
+        }
+
+
+        return userMapper.toResponseDto(foundUser);
+    }
+
+    public UserResponseDto getUserDetails(String email) throws ReliefApplicationException {
+        Optional<Admin> adminOpt = adminRepository.findByEmail(email);
+        if (adminOpt.isPresent()) {
+            return userMapper.toAdminResponseDto(adminOpt.get());
+        }
+
+        Optional<Visitor> visitorOpt = userRepository.findByEmail(email);
+        if (visitorOpt.isPresent()) {
+            return userMapper.toResponseDto(visitorOpt.get());
+        }
+
+        throw new ReliefApplicationException("No user found with email: " + email);
+    }
+
+    public void deleteUser(String name) {
+        Optional<Visitor> user = userRepository.findByEmail(name);
+        user.ifPresent(userRepository::delete);
+    }
+
+    public Visitor findByEmail(String email) throws ReliefApplicationException {
+        Optional<Visitor> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return user.get();
+        }else throw new ReliefApplicationException("No such a user");
+    }
+
+    public UserResponseDto registerAdmin(UserRequestDto userRequestDto) throws ReliefApplicationException {
+        if (userRequestDto == null) {
+            throw new ReliefApplicationException("UserRequestDto is null");
+        }
+
+        if (!userRepository.existsByUsername(userRequestDto.email())) {
+            String hashedPassed = passwordEncoder.encode(userRequestDto.password());
+            Admin admin = userMapper.toAdmin(userRequestDto);
+            admin.setRole(RoleType.ROLE_ADMIN);
+            admin.setPassword(hashedPassed);
+            Admin savedUser = adminRepository.save(admin);
+            return userMapper.toAdminResponseDto(savedUser);
+        } else throw new ReliefApplicationException("This Admin already exists");
+    }
+    public Admin findAdminByEmail(String email) throws ReliefApplicationException {
+        Optional<Admin> admin = adminRepository.findByEmail(email);
+        if (admin.isPresent()) {
+            return admin.get();
+        }else throw new ReliefApplicationException("No such an Admin");
+    }
+    public UserResponseDto getAdminDetails(String email) throws ReliefApplicationException {
+        Admin admin = findAdminByEmail(email);
+        return userMapper.toAdminResponseDto(admin);
+    }
+
+
+
+}

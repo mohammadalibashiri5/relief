@@ -1,0 +1,36 @@
+package com.mohammad.relief.common.exception;
+
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(ReliefApplicationException.class)
+    public ResponseEntity<ApiErrorResponse> handleReliefException(ReliefApplicationException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleEntityNotFound(EntityNotFoundException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> constraintViolation(MethodArgumentNotValidException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    private ResponseEntity<ApiErrorResponse> buildErrorResponse(String message, HttpStatus status) {
+        return ResponseEntity.status(status).body(new ApiErrorResponse(status.value(), message, LocalDateTime.now()));
+    }
+}

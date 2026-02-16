@@ -1,10 +1,11 @@
 package com.mohammad.relief.service;
 
-import com.mohammad.relief.data.dto.response.ModifiedUserDto;
-import com.mohammad.relief.data.entity.Visitor;
-import com.mohammad.relief.exception.ReliefApplicationException;
-import com.mohammad.relief.mapper.UserMapper;
-import com.mohammad.relief.repository.UserRepository;
+import com.mohammad.relief.features.userManagement.api.ModifiedUserDto;
+import com.mohammad.relief.features.userManagement.domain.Visitor;
+import com.mohammad.relief.common.exception.ReliefApplicationException;
+import com.mohammad.relief.features.userManagement.domain.UserService;
+import com.mohammad.relief.features.userManagement.api.UserMapper;
+import com.mohammad.relief.features.userManagement.data.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

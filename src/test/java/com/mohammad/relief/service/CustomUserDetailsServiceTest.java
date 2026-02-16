@@ -1,19 +1,11 @@
 package com.mohammad.relief.service;
 
-import com.mohammad.relief.data.entity.Visitor;
-import com.mohammad.relief.repository.UserRepository;
-import org.junit.jupiter.api.Test;
+import com.mohammad.relief.features.userManagement.data.UserRepository;
+import com.mohammad.relief.features.userManagement.domain.CustomUserDetailsService;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomUserDetailsServiceTest {

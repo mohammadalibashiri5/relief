@@ -10,14 +10,12 @@ import com.mohammad.relief.exception.ReliefApplicationException;
 import com.mohammad.relief.mapper.UserAddictionMapper;
 import com.mohammad.relief.repository.AdminAddictionRepository;
 import com.mohammad.relief.repository.UserAddictionRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.mohammad.relief.service.AddictionService.ADDICTION_NOT_FOUND_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +25,7 @@ public class UserAddictionService {
     private final AdminAddictionRepository adminAddictionRepository;
     private final UserAddictionRepository userAddictionRepository;
     private final UserAddictionMapper userAddictionMapper;
+    String ADDICTION_NOT_FOUND_MESSAGE = "Addiction Not Found";
 
 
     public UserAddictionResponseDto createUserAddiction(UserAddictionRequestDto req, String addictionName, String email) throws ReliefApplicationException {
@@ -54,29 +53,29 @@ public class UserAddictionService {
     }
 
 
-    public UserAddictionResponseDto updateAddictionByIdAndUser(Long id, @Valid UserAddictionRequestDto addictionRequestDto, String email) throws ReliefApplicationException {
-
-        UserAddiction addiction = findAddictionByIdAndValidateOwnership(id, email);
-
-        boolean isAddictionUpdate = false;
-
-
-        if (addictionRequestDto.yearsOfAddiction() != null) {
-            addiction.setYearsOfAddiction(addictionRequestDto.yearsOfAddiction());
-            isAddictionUpdate = true;
-        }
-        if (addictionRequestDto.severityLevel() != null) {
-            addiction.setSeverityLevel(addictionRequestDto.severityLevel());
-            isAddictionUpdate = true;
-        }
-
-        if (isAddictionUpdate) {
-            userAddictionRepository.save(addiction);
-        }
-
-        return userAddictionMapper.toDto(addiction);
-
-    }
+//    public UserAddictionResponseDto updateAddictionByIdAndUser(Long id, @Valid UserAddictionRequestDto addictionRequestDto, String email) throws ReliefApplicationException {
+//
+//        UserAddiction addiction = findAddictionByIdAndValidateOwnership(id, email);
+//
+//        boolean isAddictionUpdate = false;
+//
+//
+//        if (addictionRequestDto.yearsOfAddiction() != null) {
+//            addiction.setYearsOfAddiction(addictionRequestDto.yearsOfAddiction());
+//            isAddictionUpdate = true;
+//        }
+//        if (addictionRequestDto.severityLevel() != null) {
+//            addiction.setSeverityLevel(addictionRequestDto.severityLevel());
+//            isAddictionUpdate = true;
+//        }
+//
+//        if (isAddictionUpdate) {
+//            userAddictionRepository.save(addiction);
+//        }
+//
+//        return userAddictionMapper.toDto(addiction);
+//
+//    }
 
     public void deleteAddictionByIdAndUser(Long addictionId, String email) throws ReliefApplicationException {
         UserAddiction addiction = findAddictionByIdAndValidateOwnership(addictionId, email);

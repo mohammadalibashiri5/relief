@@ -26,12 +26,12 @@ public class AddictionController {
         String email = principal.getName();
         return ResponseEntity.ok(userAddictionService.createUserAddiction(requestDto,addictionName, email));
     }
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('VISITOR')")
-    public ResponseEntity<UserAddictionResponseDto> updateAddictionById(@PathVariable Long id, @Valid @RequestBody UserAddictionRequestDto requestDto, Principal principal) throws ReliefApplicationException {
-        String email = principal.getName();
-        return ResponseEntity.ok(userAddictionService.updateAddictionByIdAndUser(id, requestDto, email));
-    }
+//    @PutMapping("/{id}")
+//    @PreAuthorize("hasRole('VISITOR')")
+//    public ResponseEntity<UserAddictionResponseDto> updateAddictionById(@PathVariable Long id, @Valid @RequestBody UserAddictionRequestDto requestDto, Principal principal) throws ReliefApplicationException {
+//        String email = principal.getName();
+//        return ResponseEntity.ok(userAddictionService.updateAddictionByIdAndUser(id, requestDto, email));
+//    }
     @PreAuthorize("hasRole('VISITOR')")
     @GetMapping("/byCategoryType")
     public ResponseEntity<List<AdminAddictionResponse>> getAllAddictionByCategoryType(@RequestParam String categoryType) throws ReliefApplicationException {

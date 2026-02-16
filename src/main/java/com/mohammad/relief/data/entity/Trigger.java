@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Setter
@@ -21,8 +19,6 @@ public class Trigger {
     @ManyToOne
     @JoinColumn(name = "user_addiction_id")
     private UserAddiction userAddiction;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "trigger", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Solution> solutions = new ArrayList<>();
     private String description;
     private int repetitionCount = 0;
     private LocalDateTime createdAt;

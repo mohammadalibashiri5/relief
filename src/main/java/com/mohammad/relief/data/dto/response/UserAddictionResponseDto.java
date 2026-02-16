@@ -5,6 +5,7 @@ import com.mohammad.relief.data.entity.enums.Severity;
 public record UserAddictionResponseDto(
         Long id,
         String addictionName,
+        String addictionImageUrl,
         String categoryType,
         Severity severityLevel,
         Integer yearsOfAddiction

@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface UserAddictionMapper {
     UserAddiction toEntity(UserAddictionRequestDto requestDto);
     @Mapping(target = "addictionName" , source = "adminAddiction.name")
+    @Mapping(target = "addictionImageUrl" , source = "adminAddiction.imageUrl")
     @Mapping(target = "categoryType" , source = "adminAddiction.categoryType.name")
     UserAddictionResponseDto toDto(UserAddiction userAddiction);
 }

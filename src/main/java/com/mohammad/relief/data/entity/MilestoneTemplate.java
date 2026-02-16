@@ -5,24 +5,23 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
-@RequiredArgsConstructor
 @Getter
 @Setter
-public class SolutionFeedback {
+@RequiredArgsConstructor
+public class MilestoneTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean efficient;
-    private LocalDateTime timestamp;
+    @Column(nullable = false)
+    private Integer daysRequired;
 
-    @ManyToOne
-    private Solution solution;
+    @Column(nullable = false)
+    private String title;
 
-    @ManyToOne
-    private User user;
+    private String description;
+
+    private String iconUrl;
 
 }

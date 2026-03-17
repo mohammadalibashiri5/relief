@@ -7,8 +7,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface TriggerMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "sourceGlobalTriggerId", target = "sourceGlobalTrigger.id")
     UserTrigger toEntity(UserTriggerRequestDto triggerDto);
-    @Mapping(source = "sourceGlobalTrigger.id", target = "sourceGlobalTriggerId")
     TriggerResponseDto toDto(UserTrigger trigger);
 }

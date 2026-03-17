@@ -2,7 +2,7 @@ package com.mohammad.relief.features.userSide.userTrigger.domain;
 
 import com.mohammad.relief.features.userManagement.domain.Visitor;
 import com.mohammad.relief.features.userSide.urge.domain.Urge;
-import com.mohammad.relief.features.adminSide.globalTrigger.domain.GlobalTrigger;
+import com.mohammad.relief.features.userSide.userAddiction.domain.UserAddiction;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,9 @@ public class UserTrigger {
     @JoinColumn(name = "user_id")
     private Visitor user;
     @ManyToOne
-    @JoinColumn(name = "global_trigger_id")
-    private GlobalTrigger sourceGlobalTrigger;
+    @JoinColumn(name = "user_addiction_id")
+    private UserAddiction userAddiction;
     @ManyToMany(mappedBy = "userTriggers")
     private List<Urge> associatedUrges;
+
 }
